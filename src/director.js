@@ -68,6 +68,8 @@ export function createDirector({ clock, swarm, camera, terminal }) {
         flash: s.flash ?? 0,
         rgb: (s.rgb ?? 0) + (down ? env * energy * 0.0025 : 0),
         bloom: s.bloom,
+        glitch: s.glitch ?? 0,
+        glitchSeed: Math.floor(t * 24) % 251,
         exposure: s.exposure,
         fade: Math.min(1, Math.max(0, (end - t) / 1.5)) * (1 - (s.fade ?? 0)),
       },

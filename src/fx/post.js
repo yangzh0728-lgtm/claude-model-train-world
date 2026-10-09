@@ -20,6 +20,8 @@ const Composite = {
     uPaper: { value: 0 },
     uPaperCol: { value: new THREE.Color(0.93, 0.915, 0.87) },
     uInk: { value: 2.2 },
+    uGlitch: { value: 0 },
+    uGlitchSeed: { value: 0 },
   },
   vertexShader: /* glsl */ `
     varying vec2 vUv;
@@ -28,15 +30,26 @@ const Composite = {
   fragmentShader: /* glsl */ `
     uniform sampler2D tDiffuse, tText;
     uniform vec2 uRes;
-    uniform float uExposure, uFlash, uRGB, uGrain, uFrame, uFade, uVignette, uPaper, uInk;
+    uniform float uExposure, uFlash, uRGB, uGrain, uFrame, uFade, uVignette, uPaper, uInk, uGlitch, uGlitchSeed;
     uniform vec3 uPaperCol;
     varying vec2 vUv;
     float hash(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
     void main(){
       vec2 uv=vUv;
       vec3 c;
-      if(uRGB>0.0){
-        vec2 o=vec2(uRGB,0.0);
+      float rgb=uRGB;
+      if(uGlitch>0.0){
+        // 故障：横向条带错位、块状位移、局部反色
+        float band=floor(uv.y*mix(8.0,40.0,hash(vec2(uGlitchSeed,1.0))));
+        float hb=hash(vec2(band,uGlitchSeed));
+        if(hb<uGlitch*0.55) uv.x+=(hash(vec2(band,uGlitchSeed+7.0))-0.5)*0.25*uGlitch;
+        vec2 blk=floor(uv*vec2(12.0,7.0));
+        float hk=hash(blk+uGlitchSeed*3.1);
+        if(hk<uGlitch*0.12) uv+=(vec2(hash(blk+5.0+uGlitchSeed),hash(blk+9.0+uGlitchSeed))-0.5)*0.15;
+        rgb+=uGlitch*0.012*hash(vec2(band,uGlitchSeed+3.0));
+      }
+      if(rgb>0.0){
+        vec2 o=vec2(rgb,0.0);
         c=vec3(texture2D(tDiffuse,uv+o).r, texture2D(tDiffuse,uv).g, texture2D(tDiffuse,uv-o).b);
       } else c=texture2D(tDiffuse,uv).rgb;
       vec2 q=uv-0.5; q.x*=uRes.x/uRes.y;
@@ -52,6 +65,9 @@ const Composite = {
       } else c=glow;
       vec4 tx=texture2D(tText,uv);
       c=mix(c,tx.rgb,tx.a);
+      if(uGlitch>0.0){
+        c*=1.0-uGlitch*0.25*step(0.5,fract(uv.y*uRes.y*0.25));
+      }
       c=mix(c,vec3(1.0),clamp(uFlash,0.0,1.0));
       c+=(hash(uv*uRes+uFrame*17.0)-0.5)*uGrain;
       gl_FragColor=vec4(clamp(c*uFade,0.0,1.0),1.0);
@@ -86,6 +102,8 @@ export function createPost(renderer, scene, camera, textCanvas) {
       u.uExposure.value = fx.exposure ?? 1.3;
       u.uFrame.value = frame % 997;
       u.uPaper.value = fx.paper ?? 0;
+      u.uGlitch.value = fx.glitch ?? 0;
+      u.uGlitchSeed.value = fx.glitchSeed ?? 0;
       u.uGrain.value = fx.paper ? 0.02 : 0.035;
       bloom.strength = fx.paper ? 0 : fx.bloom ?? 0.7;
       textTex.needsUpdate = true;

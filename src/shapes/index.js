@@ -10,8 +10,9 @@ import life from './life.js';
 import compute from './compute.js';
 import network from './network.js';
 import learn from './learn.js';
+import glitch from './glitch.js';
 
-const registry = { ...basic, ...cosmos, ...laws, ...text, ...science, ...life, ...compute, ...network, ...learn };
+const registry = { ...basic, ...cosmos, ...laws, ...text, ...science, ...life, ...compute, ...network, ...learn, ...glitch };
 
 let N = 0;
 const cache = new Map();
