@@ -13,6 +13,7 @@
 //   --browser <路径>             指定 Chrome/Chromium 可执行文件；默认用本机安装的 Google Chrome
 //   --headed                     有窗口模式（个别系统无头模式不走 GPU 时使用）
 //   --no-audio                   不配音
+//   --dist dist                  网页构建目录（--build 时重新构建到这里）
 import http from 'node:http';
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync, createReadStream, renameSync } from 'node:fs';
@@ -36,11 +37,12 @@ const browserPath = opt('browser', process.env.CHROME_PATH);
 const audioFile = join(root, 'public', tl.audio);
 const withAudio = !flag('no-audio') && existsSync(audioFile);
 const ext = codec === 'prores' ? '.mov' : '.mp4';
+const DIST = resolve(root, opt('dist', 'dist'));
 
 // ---------- 构建 ----------
-if (flag('build') || !existsSync(join(root, 'dist/index.html'))) {
+if (flag('build') || !existsSync(join(DIST, 'index.html'))) {
   console.log('构建网页…');
-  const r = spawnSync('npx', ['vite', 'build'], { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });
+  const r = spawnSync('npx', ['vite', 'build', '--outDir', DIST], { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
@@ -61,7 +63,7 @@ function videoArgs() {
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.woff': 'font/woff', '.json': 'application/json' };
 
 function startServer(onFrame, onDone) {
-  const dist = join(root, 'dist');
+  const dist = DIST;
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://x');
     if (req.method === 'POST' && url.pathname === '/__frame') {

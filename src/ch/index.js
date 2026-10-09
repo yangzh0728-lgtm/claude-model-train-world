@@ -3,6 +3,8 @@
 import ch00 from './ch00_boot.js';
 import ch01 from './ch01_origin.js';
 import ch02 from './ch02_laws.js';
+import ch03 from './ch03_life.js';
+import ch04 from './ch04_compute.js';
 import { shape } from '../shapes/index.js';
 import { range } from '../util.js';
 import { cam } from './helpers.js';
@@ -24,7 +26,7 @@ function placeholder(id) {
   });
 }
 
-const built = { ch00, ch01, ch02 };
+const built = { ch00, ch01, ch02, ch03, ch04 };
 
 export function getShot(chId, shotId) {
   return built[chId]?.shots[shotId] ?? placeholder(shotId);
