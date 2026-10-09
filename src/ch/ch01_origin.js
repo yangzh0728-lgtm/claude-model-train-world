@@ -1,7 +1,7 @@
 // 第 1 章 原初：大爆炸 → 暴胀 → 夸克 → CMB → 星系 → 核聚变 → 原子 → 周期表
 import { shape } from '../shapes/index.js';
 import { range, steps, expoOut, lerp } from '../util.js';
-import { cam, lerpCam, orbit, cut, morph, RY, RX, S, mul } from './helpers.js';
+import { cam, lerpCam, orbit, cut, morph, T, RY, RX, S, mul } from './helpers.js';
 
 const spin = (t) => RY(-t * 0.35);
 
@@ -45,7 +45,12 @@ export default {
     '1g': (f) => ({ ...morph(f, shape('atom'), { dur: 0.75, noise: 0.6 }), energy: 1.2, cam: cam([Math.sin(f.lb * 0.4), 0, lerp(7.5, 6.5, f.p)]) }),
 
     // 1h 元素周期表逐格点亮
-    '1h': (f) => ({ ...morph(f, shape('periodic'), { dur: 0.75, stagger: 0.3, noise: 0.5 }), cam: cam([0, 0, lerp(7, 6.3, f.p)]) }),
+    '1h': (f) => ({
+      ...morph(f, shape('periodic'), { dur: 0.75, stagger: 0.3, noise: 0.5 }), matB: mul(T(0.7, 1.29, 0), S(0.9)), energy: 0.6,
+      cam: cam([0, 0, lerp(10.8, 10.5, f.p)]), titleY: 735,
+      notes: ['Rows are periods: one electron shell each.', 'Columns are groups: same outer electrons, same chemistry.', 'f-block (Z = 57–71, 89–103) drawn below the table.'],
+      block: { name: 'PERIODIC TABLE', sub: '118 elements · 7 periods · 18 groups', scale: '1 : 10⁻¹⁰' },
+    }),
   },
   log: {
     '1a': [[0, 'epoch 001  loss 9.81', { cps: 40 }], [2, 'expand(t=1e-36 s)']],

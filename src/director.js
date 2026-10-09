@@ -1,6 +1,9 @@
 // 导演：给定时间 t，算出这一帧的全部画面状态（粒子、相机、文字、后期）。
 // 纯函数式：同一个 t 永远得到同一帧。
 import { getShot, chapterOpts } from './ch/index.js';
+import scenes from './scenes.json';
+
+const META = Object.fromEntries(scenes.map((s) => [s.id, s]));
 
 export function createDirector({ clock, swarm, camera, terminal }) {
   const prevCache = new Map();
@@ -52,12 +55,16 @@ export function createDirector({ clock, swarm, camera, terminal }) {
       camera.updateProjectionMatrix();
     }
 
-    terminal.draw(info, { ...chapterOpts(info.shot.ch), ...s.term });
+    const meta = META[info.shot.id] ?? {};
+    const style = s.style ?? meta.style ?? 'dark';
+    const page = { style, title: meta.title, caption: meta.caption, notes: s.notes, block: s.block, header: s.header, titleY: s.titleY };
+    terminal.draw(info, { ...chapterOpts(info.shot.ch), ...s.term, page });
 
     const end = clock.duration;
     return {
       info,
       fx: {
+        paper: style === 'dark' ? 0 : 1,
         flash: s.flash ?? 0,
         rgb: (s.rgb ?? 0) + (down ? env * energy * 0.0025 : 0),
         bloom: s.bloom,

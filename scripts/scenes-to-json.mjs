@@ -5,10 +5,13 @@ import { readFileSync, writeFileSync } from 'node:fs';
 const md = readFileSync('docs/scenes.md', 'utf8');
 const scenes = [];
 for (const line of md.split('\n')) {
-  const m = line.match(/^\| (\d[a-z]) \| (\d+)(?:–(\d+))? \| (.+?) \| (.+?) \|$/);
+  const m = line.match(/^\| (\d[a-z]) \| (\d+)(?:–(\d+))? \| (.+?) \| (.+?) \| (.+?) \| (.+?) \|$/);
   if (!m) continue;
-  const [, id, b0, b1, desc, text] = m;
-  scenes.push({ id, ch: `ch0${id[0]}`, bars: [Number(b0), Number(b1 ?? b0)], desc, text: text.replace(/`/g, '') });
+  const [, id, b0, b1, styleZh, desc, text, note] = m;
+  const style = { 纸面插图: 'paper', 工程图纸: 'sheet' }[styleZh] ?? 'dark';
+  const raw = note === '（无）' ? '' : note;
+  const [title, caption] = style === 'dark' ? ['', raw] : raw.split(' · ');
+  scenes.push({ id, ch: `ch0${id[0]}`, bars: [Number(b0), Number(b1 ?? b0)], style, desc, text: text.replace(/`/g, ''), title, caption });
 }
 writeFileSync('src/scenes.json', JSON.stringify(scenes, null, 1) + '\n');
 const tl = JSON.parse(readFileSync('src/timeline.json', 'utf8'));

@@ -24,10 +24,10 @@ export default {
     },
 
     // 2b 一束抛物线轨迹按拍扇形展开
-    '2b': (f) => ({ ...morph(f, shape('parabolas'), { dur: 0.6, stagger: 0.1, noise: 0.4 }), fromP: 1, cam: cam([lerp(0.6, -0.4, f.p), 0, 8.5]) }),
+    '2b': (f) => ({ ...morph(f, shape('parabolas'), { dur: 0.6, stagger: 0.1, noise: 0.4 }), energy: 0.6, cam: cam([lerp(0.3, -0.3, f.p), 0, 8.5]), titleY: 820 }),
 
     // 2c 相空间里的圆展开成余弦波
-    '2c': (f) => ({ ...morph(f, shape('phase'), { dur: 0.75, stagger: 0.15, noise: 0.5 }), cam: cam([0.8, 0, lerp(9.5, 8.5, f.p)], [0.8, 0, 0]) }),
+    '2c': (f) => ({ ...morph(f, shape('phase'), { dur: 0.75, stagger: 0.15, noise: 0.5 }), energy: 0.6, cam: cam([0.8, 0.5, lerp(9.5, 9, f.p)], [0.8, 0.5, 0]), titleY: 780 }),
 
     // 2d 开普勒椭圆轨道
     '2d': (f) => ({
@@ -42,7 +42,12 @@ export default {
     '2f': (f) => ({ ...morph(f, shape('field'), { dur: 0.75, stagger: 0.2, noise: 0.8 }), cam: cam([lerp(-3.5, 3.5, f.p), 0.8, 7], [lerp(-1.2, 1.2, f.p), 0, 0]) }),
 
     // 2g 电磁波
-    '2g': (f) => ({ ...morph(f, shape('emwave'), { dur: 0.75, stagger: 0.15, noise: 0.6 }), cam: orbit(-0.6 + f.lb * 0.12, 8.5, 2.8) }),
+    '2g': (f) => ({
+      ...morph(f, shape('emwave'), { dur: 0.75, stagger: 0.15, noise: 0.6 }), energy: 0.6,
+      cam: orbit(-0.55 + f.lb * 0.05, 10, 2.4, [0, -0.2, 0]),
+      notes: ['E = E₀ sin(kx − ωt) ŷ', 'B = B₀ sin(kx − ωt) ẑ,   B₀ = E₀ / c', 'λ = 2π / k;  both fields in phase.'],
+      block: { name: 'EM WAVE', sub: 'transverse · c = 299 792 458 m/s', scale: '1 : 10⁻⁶' },
+    }),
 
     // 2h 双缝干涉
     '2h': (f) => ({ ...morph(f, shape('slits'), { dur: 0.75, stagger: 0.2, noise: 0.6 }), cam: cam([0, 0, lerp(10.5, 9.5, f.p)]) }),

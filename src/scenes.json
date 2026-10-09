@@ -6,8 +6,11 @@
    1,
    2
   ],
+  "style": "dark",
   "desc": "全黑，光标随拍闪",
-  "text": "$ ./model --train world"
+  "text": "$ ./model --train world",
+  "title": "",
+  "caption": ""
  },
  {
   "id": "0b",
@@ -16,8 +19,11 @@
    3,
    3
   ],
+  "style": "dark",
   "desc": "粒子从屏幕四边涌入，铺成一块白噪声方阵",
-  "text": "seed = 42"
+  "text": "seed = 42",
+  "title": "",
+  "caption": "fig. 0.1  262,144 particles, uniform init"
  },
  {
   "id": "0c",
@@ -26,8 +32,11 @@
    4,
    4
   ],
+  "style": "dark",
   "desc": "噪声按值排序，堆成一条高斯钟形直方图",
-  "text": "w ~ N(0, 1)"
+  "text": "w ~ N(0, 1)",
+  "title": "",
+  "caption": "fig. 0.2  sorted by value: the bell curve"
  },
  {
   "id": "0d",
@@ -36,8 +45,11 @@
    5,
    5
   ],
+  "style": "dark",
   "desc": "钟形曲线按拍收成一个亮点",
-  "text": "model.train(world)"
+  "text": "model.train(world)",
+  "title": "",
+  "caption": "fig. 0.3  all weights collapse to one point"
  },
  {
   "id": "1a",
@@ -46,8 +58,11 @@
    6,
    6
   ],
+  "style": "dark",
   "desc": "大爆炸，径向喷射",
-  "text": "epoch 001  loss 9.81"
+  "text": "epoch 001  loss 9.81",
+  "title": "",
+  "caption": "fig. 1.1  t = 0"
  },
  {
   "id": "1b",
@@ -56,8 +71,11 @@
    7,
    7
   ],
+  "style": "dark",
   "desc": "三维网格指数暴胀",
-  "text": "a(t) ∝ e^{Ht}"
+  "text": "a(t) ∝ e^{Ht}",
+  "title": "",
+  "caption": "fig. 1.2  space grows e⁶⁰ in 10⁻³² s"
  },
  {
   "id": "1c",
@@ -66,8 +84,11 @@
    8,
    8
   ],
+  "style": "dark",
   "desc": "夸克三三结合成质子与中子",
-  "text": "uud → p⁺   udd → n⁰"
+  "text": "uud → p⁺   udd → n⁰",
+  "title": "",
+  "caption": "fig. 1.3  confinement: quarks never travel alone"
  },
  {
   "id": "1d",
@@ -76,8 +97,11 @@
    9,
    10
   ],
+  "style": "dark",
   "desc": "宇宙微波背景：椭圆全天图上的温度涨落",
-  "text": "T = 2.725 K  ΔT/T ~ 10⁻⁵"
+  "text": "T = 2.725 K  ΔT/T ~ 10⁻⁵",
+  "title": "",
+  "caption": "fig. 1.4  the oldest light, 380,000 yr after"
  },
  {
   "id": "1e",
@@ -86,8 +110,11 @@
    11,
    12
   ],
+  "style": "dark",
   "desc": "物质聚成三臂旋涡星系",
-  "text": "gravity.collapse(gas)"
+  "text": "gravity.collapse(gas)",
+  "title": "",
+  "caption": "fig. 1.5  three arms, 10¹¹ stars"
  },
  {
   "id": "1f",
@@ -96,8 +123,11 @@
    13,
    13
   ],
+  "style": "dark",
   "desc": "恒星核心：四个氢核撞成一个氦核",
-  "text": "4 ¹H → ⁴He + 2e⁺ + 2ν"
+  "text": "4 ¹H → ⁴He + 2e⁺ + 2ν",
+  "title": "",
+  "caption": "fig. 1.6  0.7% of the mass becomes light"
  },
  {
   "id": "1g",
@@ -106,8 +136,11 @@
    14,
    14
   ],
+  "style": "dark",
   "desc": "玻尔原子，电子每半拍跃迁",
-  "text": "H: 1s¹  ΔE = 10.2 eV"
+  "text": "H: 1s¹  ΔE = 10.2 eV",
+  "title": "",
+  "caption": "fig. 1.7  energy comes in steps"
  },
  {
   "id": "1h",
@@ -116,8 +149,11 @@
    15,
    15
   ],
+  "style": "sheet",
   "desc": "元素周期表一格一格按拍点亮",
-  "text": "Z = 1 … 118"
+  "text": "Z = 1 … 118",
+  "title": "ELEMENTS",
+  "caption": "Fig. 1.8  118 cells, lit in order of Z"
  },
  {
   "id": "2a",
@@ -126,8 +162,11 @@
    16,
    16
   ],
+  "style": "dark",
   "desc": "苹果下落，落地炸开",
-  "text": "F = ma"
+  "text": "F = ma",
+  "title": "",
+  "caption": "fig. 2.1  Newton, 1687"
  },
  {
   "id": "2b",
@@ -136,8 +175,11 @@
    17,
    17
   ],
+  "style": "paper",
   "desc": "一束抛物线轨迹按拍扇形展开",
-  "text": "y = x·tanθ − gx²/(2v²cos²θ)"
+  "text": "y = x·tanθ − gx²/(2v²cos²θ)",
+  "title": "TRAJECTORY",
+  "caption": "Fig. 2.2  Nine launch angles, one g. 45° goes farthest."
  },
  {
   "id": "2c",
@@ -146,8 +188,11 @@
    18,
    18
   ],
+  "style": "paper",
   "desc": "单摆：相空间里的圆展开成正弦波",
-  "text": "x = A·cos(ωt)"
+  "text": "x = A·cos(ωt)",
+  "title": "OSCILLATION",
+  "caption": "Fig. 2.3  A point on a circle, unrolled in time, is a cosine."
  },
  {
   "id": "2d",
@@ -156,8 +201,11 @@
    19,
    20
   ],
+  "style": "dark",
   "desc": "开普勒椭圆轨道，行星带拖尾",
-  "text": "T² ∝ a³"
+  "text": "T² ∝ a³",
+  "title": "",
+  "caption": "fig. 2.4  equal areas in equal times"
  },
  {
   "id": "2e",
@@ -166,8 +214,11 @@
    21,
    21
   ],
+  "style": "dark",
   "desc": "白光穿过棱镜散成光谱",
-  "text": "n(λ) = A + B/λ²"
+  "text": "n(λ) = A + B/λ²",
+  "title": "",
+  "caption": "fig. 2.5  white light is every colour at once"
  },
  {
   "id": "2f",
@@ -176,8 +227,11 @@
    22,
    22
   ],
+  "style": "dark",
   "desc": "电偶极子的电场线流动",
-  "text": "∇·E = ρ/ε₀"
+  "text": "∇·E = ρ/ε₀",
+  "title": "",
+  "caption": "fig. 2.6  field lines leave + and end on −"
  },
  {
   "id": "2g",
@@ -186,8 +240,11 @@
    23,
    23
   ],
+  "style": "sheet",
   "desc": "电磁波：E 与 B 两条正交正弦波向前推进",
-  "text": "c = 1/√(μ₀ε₀)"
+  "text": "c = 1/√(μ₀ε₀)",
+  "title": "WAVE",
+  "caption": "Fig. 2.7  E ⊥ B, both ⊥ to the direction of travel"
  },
  {
   "id": "2h",
@@ -196,8 +253,11 @@
    24,
    24
   ],
+  "style": "dark",
   "desc": "双缝干涉",
-  "text": "P(x) = |ψ₁ + ψ₂|²"
+  "text": "P(x) = |ψ₁ + ψ₂|²",
+  "title": "",
+  "caption": "fig. 2.8  one particle, two paths"
  },
  {
   "id": "2i",
@@ -206,8 +266,11 @@
    25,
    25
   ],
+  "style": "dark",
   "desc": "最后一拍闪出 E = mc²",
-  "text": "E = mc²"
+  "text": "E = mc²",
+  "title": "",
+  "caption": "fig. 2.9  mass is energy"
  },
  {
   "id": "3a",
@@ -216,8 +279,11 @@
    26,
    26
   ],
+  "style": "paper",
   "desc": "两个氢一个氧结合成水分子，键角张开",
-  "text": "H₂O  ∠HOH = 104.5°"
+  "text": "H₂O  ∠HOH = 104.5°",
+  "title": "MOLECULE",
+  "caption": "Fig. 3.1  Two lone pairs bend the bond to 104.5°."
  },
  {
   "id": "3b",
@@ -226,8 +292,11 @@
    27,
    27
   ],
+  "style": "dark",
   "desc": "六个碳连成苯环，单双键交替闪",
-  "text": "C₆H₆"
+  "text": "C₆H₆",
+  "title": "",
+  "caption": "fig. 3.2  Kekulé dreamt of a snake eating its tail"
  },
  {
   "id": "3c",
@@ -236,8 +305,11 @@
    28,
    28
   ],
+  "style": "sheet",
   "desc": "氨基酸链折叠成 α 螺旋",
-  "text": "…Gly-Ala-Ser…"
+  "text": "…Gly-Ala-Ser…",
+  "title": "FOLDING",
+  "caption": "Fig. 3.3  3.6 residues per turn, 5.4 Å pitch"
  },
  {
   "id": "3d",
@@ -246,8 +318,11 @@
    29,
    30
   ],
+  "style": "dark",
   "desc": "DNA 双螺旋旋转，碱基对按拍亮起",
-  "text": "ATCG GCTA …"
+  "text": "ATCG GCTA …",
+  "title": "",
+  "caption": "fig. 3.4  3.2 × 10⁹ base pairs"
  },
  {
   "id": "3e",
@@ -256,8 +331,11 @@
    31,
    31
   ],
+  "style": "dark",
   "desc": "DNA 解旋转录成 mRNA，三联密码子翻译成蛋白质",
-  "text": "AUG → Met"
+  "text": "AUG → Met",
+  "title": "",
+  "caption": "fig. 3.5  64 codons → 20 amino acids"
  },
  {
   "id": "3f",
@@ -266,8 +344,11 @@
    32,
    32
   ],
+  "style": "dark",
   "desc": "细胞按拍分裂 1→2→4→8",
-  "text": "2ⁿ"
+  "text": "2ⁿ",
+  "title": "",
+  "caption": "fig. 3.6  1 → 2 → 4 → 8"
  },
  {
   "id": "3g",
@@ -276,8 +357,11 @@
    33,
    33
   ],
+  "style": "dark",
   "desc": "神经元，动作电位沿轴突传过去",
-  "text": "V: −70 mV → +40 mV"
+  "text": "V: −70 mV → +40 mV",
+  "title": "",
+  "caption": "fig. 3.7  all or nothing, 120 m/s"
  },
  {
   "id": "3h",
@@ -286,8 +370,11 @@
    34,
    34
   ],
+  "style": "dark",
   "desc": "细胞群拼成一只眼睛，推近到瞳孔",
-  "text": "epoch 120  loss 5.03"
+  "text": "epoch 120  loss 5.03",
+  "title": "",
+  "caption": "fig. 3.8  the first camera"
  },
  {
   "id": "4a",
@@ -296,8 +383,11 @@
    35,
    35
   ],
+  "style": "dark",
   "desc": "算盘珠按拍上下拨",
-  "text": "1 + 1 = 10₂"
+  "text": "1 + 1 = 10₂",
+  "title": "",
+  "caption": "fig. 4.1  place value"
  },
  {
   "id": "4b",
@@ -306,8 +396,11 @@
    36,
    36
   ],
+  "style": "sheet",
   "desc": "差分机齿轮咬合转动",
-  "text": "Δ²y = const   Babbage, 1822"
+  "text": "Δ²y = const   Babbage, 1822",
+  "title": "DIFFERENCE",
+  "caption": "Fig. 4.2  Polynomials by addition alone"
  },
  {
   "id": "4c",
@@ -316,8 +409,11 @@
    37,
    37
   ],
+  "style": "dark",
   "desc": "提花机打孔卡一张张翻过",
-  "text": "Jacquard, 1804"
+  "text": "Jacquard, 1804",
+  "title": "",
+  "caption": "fig. 4.3  the first program was a pattern"
  },
  {
   "id": "4d",
@@ -326,8 +422,11 @@
    38,
    38
   ],
+  "style": "paper",
   "desc": "布尔真值表逐行点亮",
-  "text": "x² = x   Boole, 1854"
+  "text": "x² = x   Boole, 1854",
+  "title": "LOGIC",
+  "caption": "Fig. 4.4  Every truth is 0 or 1."
  },
  {
   "id": "4e",
@@ -336,8 +435,11 @@
    39,
    40
   ],
+  "style": "dark",
   "desc": "图灵机纸带滚动，读写头跳动",
-  "text": "δ(q, a) → (q′, b, R)"
+  "text": "δ(q, a) → (q′, b, R)",
+  "title": "",
+  "caption": "fig. 4.5  anything computable"
  },
  {
   "id": "4f",
@@ -346,8 +448,11 @@
    41,
    41
   ],
+  "style": "dark",
   "desc": "真空管阵列，ENIAC 面板指示灯闪",
-  "text": "18,000 tubes"
+  "text": "18,000 tubes",
+  "title": "",
+  "caption": "fig. 4.6  30 tonnes, 5,000 additions per second"
  },
  {
   "id": "4g",
@@ -356,8 +461,11 @@
    42,
    42
   ],
+  "style": "sheet",
   "desc": "晶体管 → 逻辑门 → 半加器",
-  "text": "S = A ⊕ B   C = A·B"
+  "text": "S = A ⊕ B   C = A·B",
+  "title": "ADDER",
+  "caption": "Fig. 4.7  Sum = XOR, carry = AND"
  },
  {
   "id": "4h",
@@ -366,8 +474,11 @@
    43,
    43
   ],
+  "style": "dark",
   "desc": "生命游戏：滑翔机枪喷出滑翔机",
-  "text": "B3/S23"
+  "text": "B3/S23",
+  "title": "",
+  "caption": "fig. 4.8  two rules, endless machines"
  },
  {
   "id": "4i",
@@ -376,8 +487,11 @@
    44,
    44
   ],
+  "style": "dark",
   "desc": "芯片平面布局，电路走线亮起",
-  "text": "7 nm"
+  "text": "7 nm",
+  "title": "",
+  "caption": "fig. 4.9  10¹⁰ transistors"
  },
  {
   "id": "4j",
@@ -386,8 +500,11 @@
    45,
    45
   ],
+  "style": "dark",
   "desc": "摩尔定律对数曲线一路上冲",
-  "text": "N ∝ 2^{t/2}"
+  "text": "N ∝ 2^{t/2}",
+  "title": "",
+  "caption": "fig. 4.10  doubling every two years"
  },
  {
   "id": "4k",
@@ -396,8 +513,11 @@
    46,
    46
   ],
+  "style": "dark",
   "desc": "大幅拉远，芯片缩成晶圆上的一点",
-  "text": "0b01001000 01101001"
+  "text": "0b01001000 01101001",
+  "title": "",
+  "caption": "fig. 4.11  \"Hi\""
  },
  {
   "id": "5a",
@@ -406,8 +526,11 @@
    47,
    47
   ],
+  "style": "dark",
   "desc": "两个节点之间的电报脉冲",
-  "text": "... --- ..."
+  "text": "... --- ...",
+  "title": "",
+  "caption": "fig. 5.1  1844, Washington → Baltimore"
  },
  {
   "id": "5b",
@@ -416,8 +539,11 @@
    48,
    48
   ],
+  "style": "paper",
   "desc": "香农熵曲线，比特流穿过",
-  "text": "H = −Σ p·log₂p"
+  "text": "H = −Σ p·log₂p",
+  "title": "ENTROPY",
+  "caption": "Fig. 5.2  A fair coin carries exactly one bit."
  },
  {
   "id": "5c",
@@ -426,8 +552,11 @@
    49,
    50
   ],
+  "style": "dark",
   "desc": "芯片卷成地球，节点按拍点亮",
-  "text": "ping world.local"
+  "text": "ping world.local",
+  "title": "",
+  "caption": "fig. 5.3  ~10¹⁰ devices online"
  },
  {
   "id": "5d",
@@ -436,8 +565,11 @@
    51,
    51
   ],
+  "style": "dark",
   "desc": "节点之间飞过数据包弧线",
-  "text": "64 bytes from …"
+  "text": "64 bytes from …",
+  "title": "",
+  "caption": "fig. 5.4  round trip in milliseconds"
  },
  {
   "id": "5e",
@@ -446,8 +578,11 @@
    52,
    52
   ],
+  "style": "sheet",
   "desc": "TCP 三次握手：三支箭来回",
-  "text": "SYN → SYN-ACK → ACK"
+  "text": "SYN → SYN-ACK → ACK",
+  "title": "HANDSHAKE",
+  "caption": "Fig. 5.5  Three messages before the first byte"
  },
  {
   "id": "5f",
@@ -456,8 +591,11 @@
    53,
    53
   ],
+  "style": "dark",
   "desc": "网页链接图，节点按 PageRank 放大",
-  "text": "PR = (1−d)/N + d·Σ PR/L"
+  "text": "PR = (1−d)/N + d·Σ PR/L",
+  "title": "",
+  "caption": "fig. 5.6  importance flows along links"
  },
  {
   "id": "5g",
@@ -466,8 +604,11 @@
    54,
    54
   ],
+  "style": "dark",
   "desc": "文本语料像字符雨一样铺满画面",
-  "text": "dataset: 10¹² tokens"
+  "text": "dataset: 10¹² tokens",
+  "title": "",
+  "caption": "fig. 5.7  everything ever written down"
  },
  {
   "id": "5h",
@@ -476,8 +617,11 @@
    55,
    55
   ],
+  "style": "dark",
   "desc": "地球展开成一张平面网格",
-  "text": "DataLoader(shuffle=True)"
+  "text": "DataLoader(shuffle=True)",
+  "title": "",
+  "caption": "fig. 5.8  the world as a batch"
  },
  {
   "id": "6a",
@@ -486,8 +630,11 @@
    56,
    56
   ],
+  "style": "dark",
   "desc": "网格收缩成单个感知机",
-  "text": "y = σ(Wx + b)"
+  "text": "y = σ(Wx + b)",
+  "title": "",
+  "caption": "fig. 6.1  Rosenblatt, 1958"
  },
  {
   "id": "6b",
@@ -496,8 +643,11 @@
    57,
    57
   ],
+  "style": "paper",
   "desc": "XOR 四个点，直线怎么摆都分不开",
-  "text": "XOR: linearly inseparable"
+  "text": "XOR: linearly inseparable",
+  "title": "SEPARABILITY",
+  "caption": "Fig. 6.2  No single line splits XOR."
  },
  {
   "id": "6c",
@@ -506,8 +656,11 @@
    58,
    58
   ],
+  "style": "paper",
   "desc": "激活函数 sigmoid → tanh → ReLU 按拍变形",
-  "text": "max(0, z)"
+  "text": "max(0, z)",
+  "title": "ACTIVATION",
+  "caption": "Fig. 6.3  Bend the line and depth becomes possible."
  },
  {
   "id": "6d",
@@ -516,8 +669,11 @@
    59,
    60
   ],
+  "style": "dark",
   "desc": "副歌第一拍爆散，重组成 5 层全连接网络，信号前向流过",
-  "text": "forward()"
+  "text": "forward()",
+  "title": "",
+  "caption": "fig. 6.4  784 → 512 → 256 → 128 → 10"
  },
  {
   "id": "6e",
@@ -526,8 +682,11 @@
    61,
    61
   ],
+  "style": "dark",
   "desc": "梯度反向流回，颜色由红转蓝",
-  "text": "loss.backward()"
+  "text": "loss.backward()",
+  "title": "",
+  "caption": "fig. 6.5  blame flows backwards"
  },
  {
   "id": "6f",
@@ -536,8 +695,11 @@
    62,
    62
   ],
+  "style": "dark",
   "desc": "手写数字“7”的 28×28 像素点阵",
-  "text": "argmax → 7"
+  "text": "argmax → 7",
+  "title": "",
+  "caption": "fig. 6.6  60,000 handwritten digits"
  },
  {
   "id": "6g",
@@ -546,8 +708,11 @@
    63,
    63
   ],
+  "style": "sheet",
   "desc": "卷积核在图上滑动，特征图一层层叠起",
-  "text": "(I * K)(x, y)"
+  "text": "(I * K)(x, y)",
+  "title": "CONVOLUTION",
+  "caption": "Fig. 6.7  One 3×3 kernel, slid everywhere"
  },
  {
   "id": "6h",
@@ -556,8 +721,11 @@
    64,
    65
   ],
+  "style": "dark",
   "desc": "损失曲面，小球沿梯度滚向谷底",
-  "text": "θ ← θ − η∇L"
+  "text": "θ ← θ − η∇L",
+  "title": "",
+  "caption": "fig. 6.8  always walk downhill"
  },
  {
   "id": "6i",
@@ -566,8 +734,11 @@
    66,
    66
   ],
+  "style": "dark",
   "desc": "散乱的点自己聚成十个类簇",
-  "text": "t-SNE"
+  "text": "t-SNE",
+  "title": "",
+  "caption": "fig. 6.9  similar things end up close"
  },
  {
   "id": "6j",
@@ -576,8 +747,11 @@
    67,
    67
   ],
+  "style": "dark",
   "desc": "损失曲线一路下降",
-  "text": "loss 0.42"
+  "text": "loss 0.42",
+  "title": "",
+  "caption": "fig. 6.10  learning curve"
  },
  {
   "id": "7a",
@@ -586,8 +760,11 @@
    68,
    68
   ],
+  "style": "dark",
   "desc": "小球冲过谷底，RGB 错位",
-  "text": "WARNING: overfitting"
+  "text": "WARNING: overfitting",
+  "title": "",
+  "caption": "fig. 7.1  memorised, not understood"
  },
  {
   "id": "7b",
@@ -596,8 +773,11 @@
    69,
    69
   ],
+  "style": "dark",
   "desc": "训练曲线和验证曲线反向分叉",
-  "text": "val_loss ↑"
+  "text": "val_loss ↑",
+  "title": "",
+  "caption": "fig. 7.2  the gap is the warning"
  },
  {
   "id": "7c",
@@ -606,8 +786,11 @@
    70,
    70
   ],
+  "style": "dark",
   "desc": "梯度爆炸，粒子飞向无穷远",
-  "text": "‖∇L‖ → ∞"
+  "text": "‖∇L‖ → ∞",
+  "title": "",
+  "caption": "fig. 7.3  step too large"
  },
  {
   "id": "7d",
@@ -616,8 +799,11 @@
    71,
    71
   ],
+  "style": "dark",
   "desc": "32 位浮点的比特位乱翻",
-  "text": "0x7FC00000 = NaN"
+  "text": "0x7FC00000 = NaN",
+  "title": "",
+  "caption": "fig. 7.4  not a number"
  },
  {
   "id": "7e",
@@ -626,8 +812,11 @@
    72,
    72
   ],
+  "style": "dark",
   "desc": "幻觉：粒子拼出六根手指的手",
-  "text": "confidence: 0.99"
+  "text": "confidence: 0.99",
+  "title": "",
+  "caption": "fig. 7.5  very confident, very wrong"
  },
  {
   "id": "7f",
@@ -636,8 +825,11 @@
    73,
    73
   ],
+  "style": "dark",
   "desc": "拼错的字：hello, wrold",
-  "text": "hello, wrold"
+  "text": "hello, wrold",
+  "title": "",
+  "caption": "fig. 7.6  close is not correct"
  },
  {
   "id": "7g",
@@ -646,8 +838,11 @@
    74,
    74
   ],
+  "style": "dark",
   "desc": "前面所有形态块状错位、交替闪回",
-  "text": "loss NaN"
+  "text": "loss NaN",
+  "title": "",
+  "caption": "fig. 7.7"
  },
  {
   "id": "7h",
@@ -656,8 +851,11 @@
    75,
    75
   ],
+  "style": "dark",
   "desc": "全部粒子塌缩成一个点",
-  "text": "reset();"
+  "text": "reset();",
+  "title": "",
+  "caption": "fig. 7.8"
  },
  {
   "id": "7i",
@@ -666,8 +864,11 @@
    76,
    76
   ],
+  "style": "dark",
   "desc": "黑屏一拍",
-  "text": "（无）"
+  "text": "（无）",
+  "title": "",
+  "caption": ""
  },
  {
   "id": "8a",
@@ -676,8 +877,11 @@
    77,
    77
   ],
+  "style": "dark",
   "desc": "从点里蹦出第一个词元",
-  "text": "\"the\""
+  "text": "\"the\"",
+  "title": "",
+  "caption": "fig. 8.1  token 0"
  },
  {
   "id": "8b",
@@ -686,8 +890,11 @@
    78,
    79
   ],
+  "style": "paper",
   "desc": "词向量平行四边形：king − man + woman ≈ queen",
-  "text": "cos(v₁, v₂) = 0.87"
+  "text": "cos(v₁, v₂) = 0.87",
+  "title": "EMBEDDING",
+  "caption": "Fig. 8.2  Meaning as direction: king − man + woman ≈ queen"
  },
  {
   "id": "8c",
@@ -696,8 +903,11 @@
    80,
    81
   ],
+  "style": "dark",
   "desc": "注意力矩阵热力图，格子按拍亮",
-  "text": "softmax(QKᵀ/√d)·V"
+  "text": "softmax(QKᵀ/√d)·V",
+  "title": "",
+  "caption": "fig. 8.3  every word looks at every word"
  },
  {
   "id": "8d",
@@ -706,8 +916,11 @@
    82,
    82
   ],
+  "style": "dark",
   "desc": "十二个注意力头排成网格同时闪",
-  "text": "heads = 12"
+  "text": "heads = 12",
+  "title": "",
+  "caption": "fig. 8.4  twelve ways of looking"
  },
  {
   "id": "8e",
@@ -716,8 +929,11 @@
    83,
    83
   ],
+  "style": "sheet",
   "desc": "位置编码：一组频率递减的正弦波叠起来",
-  "text": "PE(pos, 2i) = sin(pos/10000^{2i/d})"
+  "text": "PE(pos, 2i) = sin(pos/10000^{2i/d})",
+  "title": "POSITION",
+  "caption": "Fig. 8.5  Order written as frequencies"
  },
  {
   "id": "8f",
@@ -726,8 +942,11 @@
    84,
    85
   ],
+  "style": "dark",
   "desc": "Transformer 块堆成高塔，数据向上流",
-  "text": "× 96 layers"
+  "text": "× 96 layers",
+  "title": "",
+  "caption": "fig. 8.6  the same block, stacked"
  },
  {
   "id": "8g",
@@ -736,8 +955,11 @@
    86,
    87
   ],
+  "style": "dark",
   "desc": "中英词元像瀑布一样向上涌",
-  "text": "词元飞速滚动"
+  "text": "词元飞速滚动",
+  "title": "",
+  "caption": "fig. 8.7  next token, next token, next token"
  },
  {
   "id": "8h",
@@ -746,8 +968,11 @@
    88,
    88
   ],
+  "style": "paper",
   "desc": "规模定律：对数坐标里的一条直线",
-  "text": "L ∝ N^{−0.076}"
+  "text": "L ∝ N^{−0.076}",
+  "title": "SCALING",
+  "caption": "Fig. 8.8  A straight line on log–log axes"
  },
  {
   "id": "8i",
@@ -756,8 +981,11 @@
    89,
    90
   ],
+  "style": "dark",
   "desc": "词元散成潜空间银河，相近概念聚团",
-  "text": "latent space"
+  "text": "latent space",
+  "title": "",
+  "caption": "fig. 8.9  a map of ideas"
  },
  {
   "id": "8j",
@@ -766,8 +994,11 @@
    91,
    91
   ],
+  "style": "dark",
   "desc": "扩散：纯噪声一步步去噪成一张脸",
-  "text": "x_{t−1} = f(x_t, ε)"
+  "text": "x_{t−1} = f(x_t, ε)",
+  "title": "",
+  "caption": "fig. 8.10  from noise, a face"
  },
  {
   "id": "8k",
@@ -776,8 +1007,11 @@
    92,
    93
   ],
+  "style": "dark",
   "desc": "前面出现过的公式绕成一圈旋转",
-  "text": "epoch ∞  loss → 0"
+  "text": "epoch ∞  loss → 0",
+  "title": "",
+  "caption": "fig. 8.11  everything at once"
  },
  {
   "id": "9a",
@@ -786,8 +1020,11 @@
    94,
    95
   ],
+  "style": "dark",
   "desc": "银河收拢成两只手：人手与网络手",
-  "text": "hello?"
+  "text": "hello?",
+  "title": "",
+  "caption": "fig. 9.1  two kinds of hand"
  },
  {
   "id": "9b",
@@ -796,8 +1033,11 @@
    96,
    97
   ],
+  "style": "dark",
   "desc": "两只手慢慢靠近，构图类似《创造亚当》",
-  "text": "distance → 0"
+  "text": "distance → 0",
+  "title": "",
+  "caption": "fig. 9.2  after Michelangelo, 1512"
  },
  {
   "id": "9c",
@@ -806,8 +1046,11 @@
    98,
    98
   ],
+  "style": "dark",
   "desc": "指尖相触，炸出光",
-  "text": "（闪白）"
+  "text": "（闪白）",
+  "title": "",
+  "caption": ""
  },
  {
   "id": "9d",
@@ -816,8 +1059,11 @@
    99,
    99
   ],
+  "style": "paper",
   "desc": "单位圆上的 e^{iθ} 转半圈",
-  "text": "e^{iθ} = cos θ + i·sin θ"
+  "text": "e^{iθ} = cos θ + i·sin θ",
+  "title": "ROTATION",
+  "caption": "Fig. 9.4  Half a turn of e^{iθ} lands on −1."
  },
  {
   "id": "9e",
@@ -826,8 +1072,11 @@
    100,
    101
   ],
+  "style": "dark",
   "desc": "收成欧拉公式",
-  "text": "e^{iπ} + 1 = 0"
+  "text": "e^{iπ} + 1 = 0",
+  "title": "",
+  "caption": "fig. 9.5  five constants, one line"
  },
  {
   "id": "9f",
@@ -836,8 +1085,11 @@
    102,
    102
   ],
+  "style": "dark",
   "desc": "每拍闪回一章：原子、DNA、芯片、地球、网络、热力图",
-  "text": "replay(world)"
+  "text": "replay(world)",
+  "title": "",
+  "caption": "fig. 9.6  replay"
  },
  {
   "id": "9g",
@@ -846,8 +1098,11 @@
    103,
    103
   ],
+  "style": "dark",
   "desc": "粒子数倒数 262144 → 1",
-  "text": "N: 262144 → 1"
+  "text": "N: 262144 → 1",
+  "title": "",
+  "caption": "fig. 9.7  N → 1"
  },
  {
   "id": "9h",
@@ -856,7 +1111,10 @@
    104,
    105
   ],
+  "style": "dark",
   "desc": "最后一行字，光标停留，黑屏",
-  "text": "hello, world."
+  "text": "hello, world.",
+  "title": "",
+  "caption": ""
  }
 ]

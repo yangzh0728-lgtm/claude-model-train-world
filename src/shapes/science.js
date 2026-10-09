@@ -225,7 +225,7 @@ export default {
 
   // 一束抛射轨迹，按拍扇形展开
   parabolas(N, pos, col) {
-    const r = rng(58), K = 9, v0 = 6.6, g = 9.81, ox = -4.2, oy = -2.2, sc = 1.25;
+    const r = rng(58), K = 9, v0 = 6.6, g = 9.81, ox = -4.2, oy = -1.5, sc = 1.25;
     const tr = new Uint8Array(N), s = new Float32Array(N), role = new Uint8Array(N);
     for (let i = 0; i < N; i++) {
       if (r() < 0.06) { role[i] = 1; set(pos, i, -5 + r() * 10, oy - 0.02, 0); set(col, i, 0.03, 0.04, 0.05); continue; }
@@ -238,7 +238,7 @@ export default {
         if (role[i]) continue;
         const k = tr[i], th = ((15 + (60 * k) / (K - 1)) * Math.PI) / 180;
         const T = (2 * v0 * Math.sin(th)) / g;
-        const reveal = clamp((ctx.p * 1.3 - k * 0.07) / 0.35);
+        const reveal = clamp((ctx.p * 1.7 - k * 0.07) / 0.3);
         const tt = Math.min(s[i], reveal) * T;
         const o = i * 3;
         pos[o] = ox + v0 * Math.cos(th) * tt * sc;

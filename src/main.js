@@ -3,6 +3,11 @@
 //   离线导出（?export）：按固定帧率逐帧推进时钟，把每帧像素发给本地渲染服务，由 ffmpeg 编码
 import '@fontsource/jetbrains-mono/500.css';
 import '@fontsource/jetbrains-mono/700.css';
+import '@fontsource/eb-garamond/400.css';
+import '@fontsource/eb-garamond/400-italic.css';
+import '@fontsource/eb-garamond/600.css';
+import '@fontsource/eb-garamond/700.css';
+import '@fontsource/space-grotesk/700.css';
 import * as THREE from 'three';
 import tl from './timeline.json';
 import { createClock } from './clock.js';
@@ -23,6 +28,11 @@ const N = side * side;
 await Promise.all([
   document.fonts.load('500 32px "JetBrains Mono"'),
   document.fonts.load('700 32px "JetBrains Mono"'),
+  document.fonts.load('400 32px "EB Garamond"'),
+  document.fonts.load('italic 400 32px "EB Garamond"'),
+  document.fonts.load('600 32px "EB Garamond"'),
+  document.fonts.load('700 32px "EB Garamond"'),
+  document.fonts.load('700 32px "Space Grotesk"'),
 ]);
 
 const clock = createClock(tl);
