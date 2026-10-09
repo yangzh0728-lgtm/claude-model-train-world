@@ -33,7 +33,7 @@ export default {
     '7d': (f) => ({ ...morph(f, shape('floatbits'), { dur: 0.4, stagger: 0.2, noise: 0.6 }), energy: 1.4, cam: cam([0, -0.2, lerp(10, 9.2, f.p)], [0, -0.2, 0]), glitch: jolt(f, 0.1, 0.5) }),
 
     // 7e 六根手指的手
-    '7e': (f) => ({ ...morph(f, shape('hand', { fingers: 6, color: 'magenta' }), { dur: 0.6, stagger: 0.25, noise: 0.6 }), cam: cam([lerp(-0.6, 0.6, f.p), 0, 11], [0, 0.4, 0]), glitch: jolt(f, 0.05, 0.3) }),
+    '7e': (f) => ({ ...morph(f, shape('hand', { fingers: 6, color: 'magenta', b: 0.38 }), { dur: 0.6, stagger: 0.25, noise: 0.6 }), cam: cam([lerp(-0.6, 0.6, f.p), 0, 9.8], [0, 0.4, 0]), glitch: jolt(f, 0.05, 0.3) }),
 
     // 7f hello, wrold
     '7f': (f) => ({ ...morph(f, shape('typo'), { dur: 0.4, stagger: 0.15, noise: 0.5 }), cam: cam([0, 0, lerp(9, 8.2, f.p)]), glitch: jolt(f, 0.08, 0.4) }),

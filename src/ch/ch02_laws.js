@@ -24,10 +24,10 @@ export default {
     },
 
     // 2b 一束抛物线轨迹按拍扇形展开
-    '2b': (f) => ({ ...morph(f, shape('parabolas'), { dur: 0.6, stagger: 0.1, noise: 0.4 }), energy: 0.6, cam: cam([lerp(0.3, -0.3, f.p), 0, 8.5]), titleY: 820 }),
+    '2b': (f) => ({ ...morph(f, shape('parabolas'), { dur: 0.6, stagger: 0.1, noise: 0.4 }), energy: 0.6, cam: cam([lerp(0.3, -0.3, f.p), 0, 8.5]), titleY: 950 }),
 
     // 2c 相空间里的圆展开成余弦波
-    '2c': (f) => ({ ...morph(f, shape('phase'), { dur: 0.75, stagger: 0.15, noise: 0.5 }), energy: 0.6, cam: cam([0.8, 0.5, lerp(9.5, 9, f.p)], [0.8, 0.5, 0]), titleY: 780 }),
+    '2c': (f) => ({ ...morph(f, shape('phase'), { dur: 0.75, stagger: 0.15, noise: 0.5 }), energy: 0.6, cam: cam([0.8, 0.5, lerp(9.5, 9, f.p)], [0.8, 0.5, 0]), titleY: 950 }),
 
     // 2d 开普勒椭圆轨道
     '2d': (f) => ({

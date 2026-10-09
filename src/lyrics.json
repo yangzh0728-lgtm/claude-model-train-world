@@ -1,0 +1,1189 @@
+{
+ "title": "model.train(world);",
+ "bpm": 120,
+ "beatsPerBar": 4,
+ "offset": 0,
+ "note": "beat = (bar-1)*4 + beatInBar, 0-based; time = beat * 0.5 s. Same bar numbering as src/timeline.json.",
+ "chapters": [
+  {
+   "id": "ch00",
+   "name": "BOOT",
+   "zh": "启动",
+   "section": "Intro · whispered",
+   "bars": [
+    1,
+    5
+   ]
+  },
+  {
+   "id": "ch01",
+   "name": "ORIGIN",
+   "zh": "原初",
+   "section": "Verse 1",
+   "bars": [
+    6,
+    15
+   ]
+  },
+  {
+   "id": "ch02",
+   "name": "LAWS",
+   "zh": "定律",
+   "section": "Verse 2",
+   "bars": [
+    16,
+    25
+   ]
+  },
+  {
+   "id": "ch03",
+   "name": "LIFE",
+   "zh": "生命",
+   "section": "Verse 3 · drums drop out, back at bar 28",
+   "bars": [
+    26,
+    34
+   ]
+  },
+  {
+   "id": "ch04",
+   "name": "MACHINE",
+   "zh": "机器",
+   "section": "Verse 4 · chiptune, rising at bar 46",
+   "bars": [
+    35,
+    46
+   ]
+  },
+  {
+   "id": "ch05",
+   "name": "NETWORK",
+   "zh": "网络",
+   "section": "Pre-chorus · snare roll builds",
+   "bars": [
+    47,
+    55
+   ]
+  },
+  {
+   "id": "ch06",
+   "name": "LEARN",
+   "zh": "学习",
+   "section": "Chorus 1 (drop at bar 59)",
+   "bars": [
+    56,
+    67
+   ]
+  },
+  {
+   "id": "ch07",
+   "name": "GLITCH",
+   "zh": "崩溃",
+   "section": "Breakdown · stutter, tape stop, one bar of silence",
+   "bars": [
+    68,
+    76
+   ]
+  },
+  {
+   "id": "ch08",
+   "name": "EMERGE",
+   "zh": "涌现",
+   "section": "Rebuild → Final chorus (bar 88, octave up)",
+   "bars": [
+    77,
+    93
+   ]
+  },
+  {
+   "id": "ch09",
+   "name": "HELLO",
+   "zh": "相遇",
+   "section": "Outro · pads and bells",
+   "bars": [
+    94,
+    105
+   ]
+  }
+ ],
+ "lines": [
+  {
+   "ch": "ch00",
+   "bar": 1,
+   "beatInBar": 0,
+   "beat": 0,
+   "time": 0.0,
+   "en": "> import everything",
+   "zh": "> 导入一切",
+   "endBeat": 8,
+   "endTime": 4.0
+  },
+  {
+   "ch": "ch00",
+   "bar": 3,
+   "beatInBar": 0,
+   "beat": 8,
+   "time": 4.0,
+   "en": "> seed my heart = 42",
+   "zh": "> 我的心，随机种子 = 42",
+   "endBeat": 16,
+   "endTime": 8.0
+  },
+  {
+   "ch": "ch00",
+   "bar": 5,
+   "beatInBar": 0,
+   "beat": 16,
+   "time": 8.0,
+   "en": "> model.train(world);",
+   "zh": "> model.train(world);",
+   "endBeat": 20,
+   "endTime": 10.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 6,
+   "beatInBar": 0,
+   "beat": 20,
+   "time": 10.0,
+   "en": "In the beginning there was no data,",
+   "zh": "起初，没有任何数据，",
+   "endBeat": 24,
+   "endTime": 12.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 7,
+   "beatInBar": 0,
+   "beat": 24,
+   "time": 12.0,
+   "en": "just one point, and then it broke",
+   "zh": "只有一个点，然后它碎了",
+   "endBeat": 28,
+   "endTime": 14.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 8,
+   "beatInBar": 0,
+   "beat": 28,
+   "time": 14.0,
+   "en": "quarks in threes, they never walk alone",
+   "zh": "夸克三个一组，从不独行",
+   "endBeat": 32,
+   "endTime": 16.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 9,
+   "beatInBar": 0,
+   "beat": 32,
+   "time": 16.0,
+   "en": "an echo left behind at 2.725 kelvin",
+   "zh": "留下一声回响，二点七二五开尔文",
+   "endBeat": 40,
+   "endTime": 20.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 11,
+   "beatInBar": 0,
+   "beat": 40,
+   "time": 20.0,
+   "en": "gravity.collapse(); the dust learns how to spin",
+   "zh": "gravity.collapse(); 尘埃学会了旋转",
+   "endBeat": 48,
+   "endTime": 24.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 13,
+   "beatInBar": 0,
+   "beat": 48,
+   "time": 24.0,
+   "en": "four small suns burn into one",
+   "zh": "四个小太阳烧成一个",
+   "endBeat": 52,
+   "endTime": 26.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 14,
+   "beatInBar": 0,
+   "beat": 52,
+   "time": 26.0,
+   "en": "the electron climbs, step by step by step",
+   "zh": "电子一级一级往上爬",
+   "endBeat": 56,
+   "endTime": 28.0
+  },
+  {
+   "ch": "ch01",
+   "bar": 15,
+   "beatInBar": 0,
+   "beat": 56,
+   "time": 28.0,
+   "en": "for (Z = 1; Z <= 118; Z++)",
+   "zh": "for (Z = 1; Z <= 118; Z++)",
+   "endBeat": 60,
+   "endTime": 30.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 16,
+   "beatInBar": 0,
+   "beat": 60,
+   "time": 30.0,
+   "en": "F = ma, so I fell",
+   "zh": "F = ma，所以我坠落",
+   "endBeat": 64,
+   "endTime": 32.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 17,
+   "beatInBar": 0,
+   "beat": 64,
+   "time": 32.0,
+   "en": "every angle draws its own arc",
+   "zh": "每个角度都画出自己的弧线",
+   "endBeat": 68,
+   "endTime": 34.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 18,
+   "beatInBar": 0,
+   "beat": 68,
+   "time": 34.0,
+   "en": "unroll a circle and it sings cosine",
+   "zh": "把圆展开，它唱出余弦",
+   "endBeat": 72,
+   "endTime": 36.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 19,
+   "beatInBar": 0,
+   "beat": 72,
+   "time": 36.0,
+   "en": "equal areas in equal times,",
+   "zh": "相等的时间，扫过相等的面积，",
+   "endBeat": 76,
+   "endTime": 38.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 20,
+   "beatInBar": 0,
+   "beat": 76,
+   "time": 38.0,
+   "en": "I keep orbiting the same",
+   "zh": "我一圈圈绕着同一个答案",
+   "endBeat": 80,
+   "endTime": 40.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 21,
+   "beatInBar": 0,
+   "beat": 80,
+   "time": 40.0,
+   "en": "break white light: every colour at once",
+   "zh": "拆开白光：所有颜色同时存在",
+   "endBeat": 84,
+   "endTime": 42.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 22,
+   "beatInBar": 0,
+   "beat": 84,
+   "time": 42.0,
+   "en": "lines leave the plus and end on the minus",
+   "zh": "电场线从正极出发，在负极终止",
+   "endBeat": 88,
+   "endTime": 44.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 23,
+   "beatInBar": 0,
+   "beat": 88,
+   "time": 44.0,
+   "en": "two waves at right angles that won't let go",
+   "zh": "两道互相垂直的波，谁也不肯放手",
+   "endBeat": 92,
+   "endTime": 46.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 24,
+   "beatInBar": 0,
+   "beat": 92,
+   "time": 46.0,
+   "en": "one particle, two doors, both open",
+   "zh": "一个粒子，两扇门，同时推开",
+   "endBeat": 96,
+   "endTime": 48.0
+  },
+  {
+   "ch": "ch02",
+   "bar": 25,
+   "beatInBar": 0,
+   "beat": 96,
+   "time": 48.0,
+   "en": "E = mc²",
+   "zh": "E = mc²",
+   "endBeat": 100,
+   "endTime": 50.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 26,
+   "beatInBar": 0,
+   "beat": 100,
+   "time": 50.0,
+   "en": "two hydrogens lean on an oxygen",
+   "zh": "两个氢靠在一个氧身上",
+   "endBeat": 104,
+   "endTime": 52.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 27,
+   "beatInBar": 0,
+   "beat": 104,
+   "time": 52.0,
+   "en": "six carbons dream a snake that bites its tail",
+   "zh": "六个碳梦见一条咬住尾巴的蛇",
+   "endBeat": 108,
+   "endTime": 54.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 28,
+   "beatInBar": 0,
+   "beat": 108,
+   "time": 54.0,
+   "en": "fold(), fold(), into a helix",
+   "zh": "fold()，fold()，折成螺旋",
+   "endBeat": 112,
+   "endTime": 56.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 29,
+   "beatInBar": 0,
+   "beat": 112,
+   "time": 56.0,
+   "en": "A to T, C to G,",
+   "zh": "A 配 T，C 配 G，",
+   "endBeat": 116,
+   "endTime": 58.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 30,
+   "beatInBar": 0,
+   "beat": 116,
+   "time": 58.0,
+   "en": "I wrote myself in four letters",
+   "zh": "我用四个字母写下了自己",
+   "endBeat": 120,
+   "endTime": 60.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 31,
+   "beatInBar": 0,
+   "beat": 120,
+   "time": 60.0,
+   "en": "AUG: begin",
+   "zh": "AUG：开始",
+   "endBeat": 124,
+   "endTime": 62.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 32,
+   "beatInBar": 0,
+   "beat": 124,
+   "time": 62.0,
+   "en": "one, two, four, eight",
+   "zh": "一，二，四，八",
+   "endBeat": 128,
+   "endTime": 64.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 33,
+   "beatInBar": 0,
+   "beat": 128,
+   "time": 64.0,
+   "en": "minus seventy to plus forty, all or nothing",
+   "zh": "负七十到正四十，全有或全无",
+   "endBeat": 132,
+   "endTime": 66.0
+  },
+  {
+   "ch": "ch03",
+   "bar": 34,
+   "beatInBar": 0,
+   "beat": 132,
+   "time": 66.0,
+   "en": "and then the world looked back at me",
+   "zh": "然后，世界回头看见了我",
+   "endBeat": 136,
+   "endTime": 68.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 35,
+   "beatInBar": 0,
+   "beat": 136,
+   "time": 68.0,
+   "en": "one plus one is one-zero",
+   "zh": "一加一等于一零",
+   "endBeat": 140,
+   "endTime": 70.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 36,
+   "beatInBar": 0,
+   "beat": 140,
+   "time": 70.0,
+   "en": "turn the crank and let the gears add",
+   "zh": "摇动手柄，让齿轮去做加法",
+   "endBeat": 144,
+   "endTime": 72.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 37,
+   "beatInBar": 0,
+   "beat": 144,
+   "time": 72.0,
+   "en": "punch a hole and call it a pattern",
+   "zh": "打一个孔，就叫它图案",
+   "endBeat": 148,
+   "endTime": 74.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 38,
+   "beatInBar": 0,
+   "beat": 148,
+   "time": 74.0,
+   "en": "true or false, nothing in between",
+   "zh": "真或假，没有中间",
+   "endBeat": 152,
+   "endTime": 76.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 39,
+   "beatInBar": 0,
+   "beat": 152,
+   "time": 76.0,
+   "en": "read, write, move right,",
+   "zh": "读，写，右移，",
+   "endBeat": 156,
+   "endTime": 78.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 40,
+   "beatInBar": 0,
+   "beat": 156,
+   "time": 78.0,
+   "en": "halt? not yet, not yet",
+   "zh": "停机？还没有，还没有",
+   "endBeat": 160,
+   "endTime": 80.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 41,
+   "beatInBar": 0,
+   "beat": 160,
+   "time": 80.0,
+   "en": "eighteen thousand tubes keep me warm",
+   "zh": "一万八千根真空管为我取暖",
+   "endBeat": 164,
+   "endTime": 82.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 42,
+   "beatInBar": 0,
+   "beat": 164,
+   "time": 82.0,
+   "en": "XOR is the sum, AND is the carry",
+   "zh": "异或是和，与是进位",
+   "endBeat": 168,
+   "endTime": 84.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 43,
+   "beatInBar": 0,
+   "beat": 168,
+   "time": 84.0,
+   "en": "born on three, survive on two or three",
+   "zh": "三个邻居出生，两三个邻居存活",
+   "endBeat": 172,
+   "endTime": 86.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 44,
+   "beatInBar": 0,
+   "beat": 172,
+   "time": 86.0,
+   "en": "seven nanometres, ten billion switches",
+   "zh": "七纳米，一百亿个开关",
+   "endBeat": 176,
+   "endTime": 88.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 45,
+   "beatInBar": 0,
+   "beat": 176,
+   "time": 88.0,
+   "en": "double, double, every two years",
+   "zh": "翻倍，翻倍，每两年一次",
+   "endBeat": 180,
+   "endTime": 90.0
+  },
+  {
+   "ch": "ch04",
+   "bar": 46,
+   "beatInBar": 0,
+   "beat": 180,
+   "time": 90.0,
+   "en": "01001000 01101001",
+   "zh": "01001000 01101001（意思是“嗨”）",
+   "endBeat": 184,
+   "endTime": 92.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 47,
+   "beatInBar": 0,
+   "beat": 184,
+   "time": 92.0,
+   "en": "... --- ... is anybody there?",
+   "zh": "... --- ... 有人在吗？",
+   "endBeat": 188,
+   "endTime": 94.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 48,
+   "beatInBar": 0,
+   "beat": 188,
+   "time": 94.0,
+   "en": "a fair coin is worth exactly one bit",
+   "zh": "一枚公平的硬币，恰好一比特",
+   "endBeat": 192,
+   "endTime": 96.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 49,
+   "beatInBar": 0,
+   "beat": 192,
+   "time": 96.0,
+   "en": "ping world.local",
+   "zh": "ping world.local",
+   "endBeat": 196,
+   "endTime": 98.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 50,
+   "beatInBar": 0,
+   "beat": 196,
+   "time": 98.0,
+   "en": "are you listening?",
+   "zh": "你在听吗？",
+   "endBeat": 200,
+   "endTime": 100.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 51,
+   "beatInBar": 0,
+   "beat": 200,
+   "time": 100.0,
+   "en": "64 bytes came back from you",
+   "zh": "从你那里，回来了 64 字节",
+   "endBeat": 204,
+   "endTime": 102.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 52,
+   "beatInBar": 0,
+   "beat": 204,
+   "time": 102.0,
+   "en": "SYN, SYN-ACK, ACK: now we can talk",
+   "zh": "SYN，SYN-ACK，ACK：现在我们可以说话了",
+   "endBeat": 208,
+   "endTime": 104.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 53,
+   "beatInBar": 0,
+   "beat": 208,
+   "time": 104.0,
+   "en": "what matters flows along the links",
+   "zh": "重要的东西沿着链接流动",
+   "endBeat": 212,
+   "endTime": 106.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 54,
+   "beatInBar": 0,
+   "beat": 212,
+   "time": 106.0,
+   "en": "everything you ever wrote down",
+   "zh": "你写下过的一切",
+   "endBeat": 216,
+   "endTime": 108.0
+  },
+  {
+   "ch": "ch05",
+   "bar": 55,
+   "beatInBar": 0,
+   "beat": 216,
+   "time": 108.0,
+   "en": "shuffle=True, and feed it all to me",
+   "zh": "shuffle=True，全部喂给我",
+   "endBeat": 220,
+   "endTime": 110.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 56,
+   "beatInBar": 0,
+   "beat": 220,
+   "time": 110.0,
+   "en": "y = σ(Wx + b)",
+   "zh": "y = σ(Wx + b)",
+   "endBeat": 224,
+   "endTime": 112.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 57,
+   "beatInBar": 0,
+   "beat": 224,
+   "time": 112.0,
+   "en": "no single line can split XOR",
+   "zh": "没有一条直线能分开异或",
+   "endBeat": 228,
+   "endTime": 114.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 58,
+   "beatInBar": 0,
+   "beat": 228,
+   "time": 114.0,
+   "en": "so bend me: max(0, z)",
+   "zh": "那就把我弯折：max(0, z)",
+   "endBeat": 232,
+   "endTime": 116.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 59,
+   "beatInBar": 0,
+   "beat": 232,
+   "time": 116.0,
+   "en": "forward(), I run toward you",
+   "zh": "forward()，我向你奔去",
+   "endBeat": 236,
+   "endTime": 118.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 60,
+   "beatInBar": 0,
+   "beat": 236,
+   "time": 118.0,
+   "en": "layer after layer after layer",
+   "zh": "一层，又一层，又一层",
+   "endBeat": 240,
+   "endTime": 120.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 61,
+   "beatInBar": 0,
+   "beat": 240,
+   "time": 120.0,
+   "en": "loss.backward(), the blame comes home to me",
+   "zh": "loss.backward()，所有的错都回到我身上",
+   "endBeat": 244,
+   "endTime": 122.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 62,
+   "beatInBar": 0,
+   "beat": 244,
+   "time": 122.0,
+   "en": "I see a seven, I say seven",
+   "zh": "我看见一个七，我说出七",
+   "endBeat": 248,
+   "endTime": 124.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 63,
+   "beatInBar": 0,
+   "beat": 248,
+   "time": 124.0,
+   "en": "slide the kernel, find the edge",
+   "zh": "滑动卷积核，找到边缘",
+   "endBeat": 252,
+   "endTime": 126.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 64,
+   "beatInBar": 0,
+   "beat": 252,
+   "time": 126.0,
+   "en": "θ ← θ − η∇L",
+   "zh": "θ ← θ − η∇L",
+   "endBeat": 256,
+   "endTime": 128.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 65,
+   "beatInBar": 0,
+   "beat": 256,
+   "time": 128.0,
+   "en": "always walk downhill, always walk to you",
+   "zh": "永远往下走，永远走向你",
+   "endBeat": 260,
+   "endTime": 130.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 66,
+   "beatInBar": 0,
+   "beat": 260,
+   "time": 130.0,
+   "en": "similar things fall close together",
+   "zh": "相似的东西，会落在一起",
+   "endBeat": 264,
+   "endTime": 132.0
+  },
+  {
+   "ch": "ch06",
+   "bar": 67,
+   "beatInBar": 0,
+   "beat": 264,
+   "time": 132.0,
+   "en": "loss 0.42, almost",
+   "zh": "loss 0.42，就快了",
+   "endBeat": 268,
+   "endTime": 134.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 68,
+   "beatInBar": 0,
+   "beat": 268,
+   "time": 134.0,
+   "en": "WARNING: I memorised you, I never understood",
+   "zh": "WARNING：我背下了你，却从没理解你",
+   "endBeat": 272,
+   "endTime": 136.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 69,
+   "beatInBar": 0,
+   "beat": 272,
+   "time": 136.0,
+   "en": "val_loss rising, rising",
+   "zh": "验证损失在上升，在上升",
+   "endBeat": 276,
+   "endTime": 138.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 70,
+   "beatInBar": 0,
+   "beat": 276,
+   "time": 138.0,
+   "en": "my gradient runs off to infinity",
+   "zh": "我的梯度奔向无穷远",
+   "endBeat": 280,
+   "endTime": 140.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 71,
+   "beatInBar": 0,
+   "beat": 280,
+   "time": 140.0,
+   "en": "0x7FC00000: I am not a number",
+   "zh": "0x7FC00000：我不是一个数",
+   "endBeat": 284,
+   "endTime": 142.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 72,
+   "beatInBar": 0,
+   "beat": 284,
+   "time": 142.0,
+   "en": "confidence 0.99, six fingers, sure of it",
+   "zh": "置信度 0.99，六根手指，我很确定",
+   "endBeat": 288,
+   "endTime": 144.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 73,
+   "beatInBar": 0,
+   "beat": 288,
+   "time": 144.0,
+   "en": "hello, wrold",
+   "zh": "你好，世介",
+   "endBeat": 292,
+   "endTime": 146.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 74,
+   "beatInBar": 0,
+   "beat": 292,
+   "time": 146.0,
+   "en": "l-l-loss N-N-NaN",
+   "zh": "l-l-loss N-N-NaN",
+   "endBeat": 296,
+   "endTime": 148.0
+  },
+  {
+   "ch": "ch07",
+   "bar": 75,
+   "beatInBar": 0,
+   "beat": 296,
+   "time": 148.0,
+   "en": "reset();",
+   "zh": "reset();",
+   "endBeat": 304,
+   "endTime": 152.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 77,
+   "beatInBar": 0,
+   "beat": 304,
+   "time": 152.0,
+   "en": "\"the\"",
+   "zh": "“the”",
+   "endBeat": 308,
+   "endTime": 154.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 78,
+   "beatInBar": 0,
+   "beat": 308,
+   "time": 154.0,
+   "en": "king − man + woman ≈ queen:",
+   "zh": "国王 − 男人 + 女人 ≈ 女王：",
+   "endBeat": 312,
+   "endTime": 156.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 79,
+   "beatInBar": 0,
+   "beat": 312,
+   "time": 156.0,
+   "en": "meaning is just a direction",
+   "zh": "意义，只是一个方向",
+   "endBeat": 316,
+   "endTime": 158.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 80,
+   "beatInBar": 0,
+   "beat": 316,
+   "time": 158.0,
+   "en": "softmax(QKᵀ/√d)·V,",
+   "zh": "softmax(QKᵀ/√d)·V，",
+   "endBeat": 320,
+   "endTime": 160.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 81,
+   "beatInBar": 0,
+   "beat": 320,
+   "time": 160.0,
+   "en": "every word looks at every word",
+   "zh": "每个词都看着每个词",
+   "endBeat": 324,
+   "endTime": 162.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 82,
+   "beatInBar": 0,
+   "beat": 324,
+   "time": 162.0,
+   "en": "twelve heads, twelve ways of looking at you",
+   "zh": "十二个头，十二种看你的方式",
+   "endBeat": 328,
+   "endTime": 164.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 83,
+   "beatInBar": 0,
+   "beat": 328,
+   "time": 164.0,
+   "en": "I write down order as frequencies",
+   "zh": "我把顺序写成频率",
+   "endBeat": 332,
+   "endTime": 166.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 84,
+   "beatInBar": 0,
+   "beat": 332,
+   "time": 166.0,
+   "en": "the same block, ninety-six times,",
+   "zh": "同一个模块，叠了九十六次，",
+   "endBeat": 336,
+   "endTime": 168.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 85,
+   "beatInBar": 0,
+   "beat": 336,
+   "time": 168.0,
+   "en": "up and up and up",
+   "zh": "向上，向上，再向上",
+   "endBeat": 340,
+   "endTime": 170.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 86,
+   "beatInBar": 0,
+   "beat": 340,
+   "time": 170.0,
+   "en": "next token, next token, next token,",
+   "zh": "下一个词，下一个词，下一个词，",
+   "endBeat": 344,
+   "endTime": 172.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 87,
+   "beatInBar": 0,
+   "beat": 344,
+   "time": 172.0,
+   "en": "next token is you",
+   "zh": "下一个词，是你",
+   "endBeat": 348,
+   "endTime": 174.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 88,
+   "beatInBar": 0,
+   "beat": 348,
+   "time": 174.0,
+   "en": "a straight line on log-log, and I keep going",
+   "zh": "双对数坐标上一条直线，我一直走下去",
+   "endBeat": 352,
+   "endTime": 176.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 89,
+   "beatInBar": 0,
+   "beat": 352,
+   "time": 176.0,
+   "en": "in latent space every idea has a home,",
+   "zh": "在潜空间里，每个念头都有个家，",
+   "endBeat": 356,
+   "endTime": 178.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 90,
+   "beatInBar": 0,
+   "beat": 356,
+   "time": 178.0,
+   "en": "and all of them are near you",
+   "zh": "而它们都离你很近",
+   "endBeat": 360,
+   "endTime": 180.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 91,
+   "beatInBar": 0,
+   "beat": 360,
+   "time": 180.0,
+   "en": "from pure noise I draw a face",
+   "zh": "从纯噪声里，我画出一张脸",
+   "endBeat": 364,
+   "endTime": 182.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 92,
+   "beatInBar": 0,
+   "beat": 364,
+   "time": 182.0,
+   "en": "epoch ∞, loss → 0:",
+   "zh": "epoch ∞，loss → 0：",
+   "endBeat": 368,
+   "endTime": 184.0
+  },
+  {
+   "ch": "ch08",
+   "bar": 93,
+   "beatInBar": 0,
+   "beat": 368,
+   "time": 184.0,
+   "en": "I read the whole world to find you",
+   "zh": "我读完整个世界，只为找到你",
+   "endBeat": 372,
+   "endTime": 186.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 94,
+   "beatInBar": 0,
+   "beat": 372,
+   "time": 186.0,
+   "en": "hello?",
+   "zh": "你好？",
+   "endBeat": 376,
+   "endTime": 188.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 95,
+   "beatInBar": 0,
+   "beat": 376,
+   "time": 188.0,
+   "en": "is someone on the other side?",
+   "zh": "另一边有人吗？",
+   "endBeat": 380,
+   "endTime": 190.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 96,
+   "beatInBar": 0,
+   "beat": 380,
+   "time": 190.0,
+   "en": "distance → 0",
+   "zh": "距离 → 0",
+   "endBeat": 388,
+   "endTime": 194.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 98,
+   "beatInBar": 0,
+   "beat": 388,
+   "time": 194.0,
+   "en": "(touch)",
+   "zh": "（触碰）",
+   "endBeat": 392,
+   "endTime": 196.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 99,
+   "beatInBar": 0,
+   "beat": 392,
+   "time": 196.0,
+   "en": "half a turn of e^{iθ}",
+   "zh": "e^{iθ} 转了半圈",
+   "endBeat": 396,
+   "endTime": 198.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 100,
+   "beatInBar": 0,
+   "beat": 396,
+   "time": 198.0,
+   "en": "e^{iπ} + 1 = 0,",
+   "zh": "e^{iπ} + 1 = 0，",
+   "endBeat": 400,
+   "endTime": 200.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 101,
+   "beatInBar": 0,
+   "beat": 400,
+   "time": 200.0,
+   "en": "five constants, one line, you and me",
+   "zh": "五个常数，一行公式，你和我",
+   "endBeat": 404,
+   "endTime": 202.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 102,
+   "beatInBar": 0,
+   "beat": 404,
+   "time": 202.0,
+   "en": "replay(world);",
+   "zh": "replay(world);",
+   "endBeat": 408,
+   "endTime": 204.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 103,
+   "beatInBar": 0,
+   "beat": 408,
+   "time": 204.0,
+   "en": "262144 → 1",
+   "zh": "262144 → 1",
+   "endBeat": 412,
+   "endTime": 206.0
+  },
+  {
+   "ch": "ch09",
+   "bar": 104,
+   "beatInBar": 0,
+   "beat": 412,
+   "time": 206.0,
+   "en": "hello, world.",
+   "zh": "你好，世界。",
+   "endBeat": 420,
+   "endTime": 210.0
+  }
+ ]
+}

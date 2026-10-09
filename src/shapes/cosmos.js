@@ -41,6 +41,8 @@ export default {
   atom(N, pos, col) {
     const r = rng(22);
     const radii = [1.0, 1.75, 2.5];
+    // 原子核里 13 个核子的位置（斐波那契球面 + 中心）
+    const NUC = [[0, 0, 0], ...Array.from({ length: 12 }, (_, k) => { const y = 1 - (2 * (k + 0.5)) / 12, rr = Math.sqrt(1 - y * y), a = k * 2.39996; return [Math.cos(a) * rr * 0.17, y * 0.17, Math.sin(a) * rr * 0.17]; })];
     const role = new Uint8Array(N);      // 0 核 1 轨道 2 电子 3 光子
     const ring = new Uint8Array(N);
     const a0 = new Float32Array(N);
@@ -48,11 +50,14 @@ export default {
     for (let i = 0; i < N; i++) {
       const roll = r();
       if (roll < 0.1) {
+        // 原子核：一团带明暗的质子（红）和中子（灰白）小球
         role[i] = 0;
-        const s = 0.16;
-        set(off, i, gauss(r) * s, gauss(r) * s, gauss(r) * s);
-        const c = lerp3(C.white, [1, 0.9, 0.8], r());
-        set(col, i, c[0] * 0.12, c[1] * 0.12, c[2] * 0.12);
+        const k = (r() * NUC.length) | 0, ctr = NUC[k];
+        const u = r() * 2 - 1, a = r() * Math.PI * 2, sq = Math.sqrt(1 - u * u), d = [sq * Math.cos(a), u, sq * Math.sin(a)];
+        set(off, i, ctr[0] + d[0] * 0.105, ctr[1] + d[1] * 0.105, ctr[2] + d[2] * 0.105);
+        const lam = Math.max(0, d[0] * -0.5 + d[1] * 0.6 + d[2] * 0.62), rim = Math.pow(1 - Math.abs(d[2]), 3);
+        const c = k % 2 ? C.red : [0.85, 0.88, 0.95], b = (0.03 + 0.2 * lam + 0.08 * rim) * (d[2] < 0 ? 0.3 : 1);
+        set(col, i, c[0] * b, c[1] * b, c[2] * b);
       } else if (roll < 0.82) {
         role[i] = 1;
         const w = r() * (radii[0] + radii[1] + radii[2]);
@@ -62,10 +67,18 @@ export default {
         const c = lerp3(C.ice, C.white, 0.2 + r() * 0.3);
         set(col, i, c[0] * 0.16, c[1] * 0.16, c[2] * 0.16);
       } else if (roll < 0.95) {
+        // 电子：实心亮球 + 一圈光晕
         role[i] = 2;
-        const s = 0.09;
-        set(off, i, gauss(r) * s, gauss(r) * s, gauss(r) * s);
-        set(col, i, 0.07, 0.09, 0.12);
+        if (r() < 0.6) {
+          const u = r() * 2 - 1, a = r() * Math.PI * 2, sq = Math.sqrt(1 - u * u), d = [sq * Math.cos(a), u, sq * Math.sin(a)];
+          set(off, i, d[0] * 0.07, d[1] * 0.07, d[2] * 0.07);
+          const lam = Math.max(0, d[0] * -0.5 + d[1] * 0.6 + d[2] * 0.62);
+          set(col, i, 0.05 + 0.2 * lam, 0.08 + 0.25 * lam, 0.12 + 0.3 * lam);
+        } else {
+          const s = 0.16;
+          set(off, i, gauss(r) * s, gauss(r) * s, gauss(r) * s);
+          set(col, i, 0.02, 0.035, 0.06);
+        }
       } else {
         role[i] = 3;
         a0[i] = r() * Math.PI * 2;

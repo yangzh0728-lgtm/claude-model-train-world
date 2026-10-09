@@ -1,63 +1,66 @@
 // 第 3 章 生命：水分子、苯环、α 螺旋、DNA、转录翻译、细胞分裂、神经元、眼睛
 import { rng, gauss, lerp3, clamp, smooth, lerp } from '../util.js';
 import { C } from '../palette.js';
-import { compose, seg, poly, curve, circle, disc, sphere, ball, text } from './kit.js';
+import { compose, seg, poly, curve, circle, disc, sphere, ball, text, orb, rod, lobe, lit, torus } from './kit.js';
 
 const BASE = { A: [0.49, 1, 0.7], T: [1, 0.35, 0.43], C: [0.43, 0.78, 1], G: [1, 0.82, 0.48] };
 const PAIR = { A: 'T', T: 'A', C: 'G', G: 'C' };
 const SEQ = 'ATGCGTACCTAGGCATTACGGATCCATGGCTAAGTCGATCGTA';
 
 export default {
-  // 3a 水分子：键角 104.5°
+  // 3a 水分子（纸面插图）：立体球棍模型，两对孤对电子是 sp³ 花瓣，慢慢转动，点刻阴影
   water(N, pos, col) {
-    const O = [0, 0.6], d = 2.3, half = (104.5 / 2) * (Math.PI / 180);
-    const H1 = [O[0] + Math.sin(half) * d, O[1] - Math.cos(half) * d], H2 = [O[0] - Math.sin(half) * d, O[1] - Math.cos(half) * d];
-    const ink = { c: C.white, b: 0.12 };
-    const bond = (h) => {
-      const dx = h[0] - O[0], dy = h[1] - O[1], L = Math.hypot(dx, dy);
-      return seg([O[0] + (dx / L) * 0.95, O[1] + (dy / L) * 0.95], [h[0] - (dx / L) * 0.6, h[1] - (dy / L) * 0.6], { ...ink, th: 0.012 });
+    const O = [0, 0.45, 0], half = (104.5 / 2) * (Math.PI / 180), d = 2.25;
+    const H1 = [O[0] + Math.sin(half) * d, O[1] - Math.cos(half) * d, 0], H2 = [O[0] - Math.sin(half) * d, O[1] - Math.cos(half) * d, 0];
+    const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const prims = [
+      orb(O, 0.95, { c: C.red, b: 0.16, w: 1.4 }),
+      orb(H1, 0.58, { c: C.white, b: 0.1 }), orb(H2, 0.58, { c: C.white, b: 0.1 }),
+      rod(O, H1, 0.16, { c: C.white, b: 0.1 }), rod(O, H2, 0.16, { c: C.white, b: 0.1 }),
+      // 孤对电子：两片花瓣伸向分子平面的前后上方
+      lobe(O, [0, 0.62, 0.78], 1.55, 0.72, { c: C.ice, b: 0.05, w: 0.8 }), lobe(O, [0, 0.62, -0.78], 1.55, 0.72, { c: C.ice, b: 0.05, w: 0.8 }),
+      // 键角弧线（随分子转动）
+      circle(O, 1.35, { a0: -Math.PI / 2 - half, a1: -Math.PI / 2 + half, c: C.amber, b: 0.14, n: 80 }),
+      // 文字标注不转
+      text('O', { x: 1.25, y: 1.25, height: 0.42, c: C.red, b: 0.14, flat: true, family: '"EB Garamond"', weight: 600 }),
+      text('H', { x: H1[0] + 0.55, y: H1[1] - 0.95, height: 0.38, c: C.white, b: 0.14, flat: true, family: '"EB Garamond"', weight: 600 }),
+      text('H', { x: H2[0] - 0.85, y: H2[1] - 0.95, height: 0.38, c: C.white, b: 0.14, flat: true, family: '"EB Garamond"', weight: 600 }),
+      text('104.5°', { x: 0, y: O[1] - 2.25, height: 0.3, align: 'center', c: C.amber, b: 0.16, flat: true, family: '"EB Garamond"', weight: 600 }),
+      text('lone pairs', { x: -2.6, y: 2.55, height: 0.24, c: C.ice, b: 0.12, flat: true, family: '"EB Garamond"', weight: 400 }),
+      seg([-1.25, 2.5], [-0.45, 1.95], { c: C.ice, b: 0.06, flat: true }),
+    ];
+    void sub;
+    const comp = compose(N, pos, col, prims, 301);
+    return function update(ctx) {
+      lit(comp, pos, col, N, { ry: Math.sin(ctx.t * 0.7) * 0.55, rx: 0.18 + Math.sin(ctx.t * 0.45) * 0.12, ink: true, center: O });
     };
-    compose(N, pos, col, [
-      circle(O, 0.9, { c: C.red, b: 0.14 }), sphere([...O, 0], 0.88, { c: C.red, b: 0.05, w: 0.6 }),
-      circle(H1, 0.55, ink), circle(H2, 0.55, ink),
-      bond(H1), bond(H2),
-      text('O', { x: O[0], y: O[1] - 0.25, height: 0.55, align: 'center', c: C.red, b: 0.12 }),
-      text('H', { x: H1[0], y: H1[1] - 0.17, height: 0.38, align: 'center', ...ink }),
-      text('H', { x: H2[0], y: H2[1] - 0.17, height: 0.38, align: 'center', ...ink }),
-      // 两对孤对电子
-      ...[-0.5, 0.5].map((s) => curve((t) => { const a = t * Math.PI * 2; return [O[0] + s * 0.75 + Math.cos(a) * 0.28, O[1] + 1.25 + Math.sin(a) * 0.5, 0]; }, { c: C.ice, b: 0.08 })),
-      ...[-0.5, 0.5].map((s) => disc([O[0] + s * 0.75, O[1] + 1.25], 0.06, { c: C.ice, b: 0.3 })),
-      // 键角
-      circle(O, 1.45, { a0: -Math.PI / 2 - half, a1: -Math.PI / 2 + half, c: C.amber, b: 0.1 }),
-      text('104.5°', { x: O[0], y: O[1] - 2.0, height: 0.32, align: 'center', c: C.amber, b: 0.1, weight: 500 }),
-    ], 301);
   },
 
-  // 3b 苯环：单双键每拍交替（共振）
+  // 3b 苯环：立体球棍模型 + 上下两层 π 电子云，整体在空间里转；双键每拍换位置（共振）
   benzene(N, pos, col) {
-    const R = 1.7, V = Array.from({ length: 6 }, (_, k) => { const a = Math.PI / 2 + (k * Math.PI) / 3; return [Math.cos(a) * R, Math.sin(a) * R]; });
+    const R = 1.55, V = Array.from({ length: 6 }, (_, k) => { const a = Math.PI / 2 + (k * Math.PI) / 3; return [Math.cos(a) * R, Math.sin(a) * R, 0]; });
     const prims = [];
     V.forEach((v, k) => {
-      const w = V[(k + 1) % 6];
-      prims.push(seg(lerp3([...v, 0], [...w, 0], 0.17), lerp3([...v, 0], [...w, 0], 0.83), { c: C.ice, b: 0.12 }));
-      const out = [v[0] * 1.55, v[1] * 1.55];
-      prims.push(seg([v[0] * 1.17, v[1] * 1.17, 0], [out[0] * 0.92, out[1] * 0.92, 0], { c: C.white, b: 0.06 }));
-      prims.push(circle(v, 0.3, { c: C.ice, b: 0.12 }), text('C', { x: v[0], y: v[1] - 0.13, height: 0.3, align: 'center', c: C.ice, b: 0.12 }));
-      prims.push(text('H', { x: out[0] * 1.06, y: out[1] * 1.06 - 0.12, height: 0.26, align: 'center', c: C.white, b: 0.08 }));
+      const w = V[(k + 1) % 6], hpos = [v[0] * 1.7, v[1] * 1.7, 0];
+      prims.push(orb(v, 0.34, { c: lerp3(C.ice, C.white, 0.3), b: 0.2 }));
+      prims.push(orb(hpos, 0.2, { c: C.white, b: 0.18 }));
+      prims.push(rod(v, hpos, 0.07, { c: C.white, b: 0.14 }));
+      prims.push(rod(v, w, 0.085, { c: C.ice, b: 0.18 }));
+      // 双键的第二根：往环内偏一点
+      const inn = (p) => [p[0] * 0.84, p[1] * 0.84, 0];
+      prims.push(rod(lerp3(inn(v), inn(w), 0.12), lerp3(inn(v), inn(w), 0.88), 0.07, { c: C.life, b: 0.22, dbl: k % 2 }));
     });
-    // 内侧的双键：A 组（边 0,2,4）与 B 组（边 1,3,5）
-    const inner = (k) => { const v = V[k], w = V[(k + 1) % 6], q = (x, y) => [(x[0] * 0.8 + y[0] * 0.2) * 0.8, (x[1] * 0.8 + y[1] * 0.2) * 0.8, 0]; return seg(q(v, w), q(w, v), { c: C.life, b: 0.18 }); };
-    const doubles = [0, 1, 2, 3, 4, 5].map(inner);
-    const comp = compose(N, pos, col, [...prims, ...doubles, circle([0, 0], 0.85, { c: C.life, b: 0.03 })], 302);
-    const firstDouble = prims.length;
+    // π 电子云：环上下两个甜甜圈
+    for (const z of [-0.42, 0.42]) prims.push(torus([0, 0, z], R, 0.28, { c: C.life, b: 0.025, cloud: true, rim: 1.2, spec: 0.2 }));
+    const comp = compose(N, pos, col, prims, 302);
+    const L = comp.list;
     return function update(ctx) {
+      lit(comp, pos, col, N, { ry: ctx.t * 0.6, rx: -1.0 + Math.sin(ctx.t * 0.4) * 0.25 });
       const set = Math.floor(ctx.beat) % 2;
       for (let i = 0; i < N; i++) {
-        const k = comp.role[i] - firstDouble;
-        if (k < 0 || k > 5) continue;
-        const on = k % 2 === set;
-        const o = i * 3, s = on ? 1 : 0.15;
-        col[o] = comp.baseCol[o] * s; col[o + 1] = comp.baseCol[o + 1] * s; col[o + 2] = comp.baseCol[o + 2] * s;
+        const q = L[comp.role[i]];
+        if (q.dbl === undefined) continue;
+        if (q.dbl !== set) { const o = i * 3; col[o] = col[o + 1] = col[o + 2] = 0; }
       }
     };
   },
@@ -191,6 +194,7 @@ export default {
       }
       return c;
     };
+    const base = col.slice(), LX = -0.5, LY = 0.6, LZ = 0.62;
     return function update(ctx) {
       const b = clamp(ctx.p * 4, 0, 3.999);
       const g = Math.min(3, Math.floor(b) + 1), f = smooth(clamp((b % 1) / 0.5));
@@ -200,6 +204,11 @@ export default {
         // 正在分裂时细胞拉长、中间收腰
         const pinch = 1 - 0.35 * Math.sin(f * Math.PI);
         pos[o] = c[0] + dir[o] * R; pos[o + 1] = c[1] + dir[o + 1] * R * pinch; pos[o + 2] = c[2] + dir[o + 2] * R * pinch;
+        if (!role[i]) {
+          // 细胞膜按光照明暗：迎光面亮、边缘一圈轮廓光，像半透明的球
+          const k = 0.2 + 1.3 * Math.max(0, dir[o] * LX + dir[o + 1] * LY + dir[o + 2] * LZ) + 1.1 * Math.pow(1 - Math.abs(dir[o + 2]), 3);
+          col[o] = base[o] * k; col[o + 1] = base[o + 1] * k; col[o + 2] = base[o + 2] * k;
+        }
       }
     };
   },
@@ -244,21 +253,48 @@ export default {
     };
   },
 
-  // 3h 眼睛：杏仁形轮廓、虹膜放射纹、瞳孔留空，周围是细胞镶嵌
+  // 3h 眼睛：上下眼睑（带睫毛和眼褶）、巩膜、放射纹理的虹膜、角膜高光；瞳孔随拍收缩；周围是细胞镶嵌
   eye(N, pos, col) {
     const r = rng(308);
-    const lid = (sgn) => curve((t) => { const x = -4 + t * 8; return [x, sgn * 1.9 * Math.cos((x / 4) * (Math.PI / 2)) ** 1.3, 0]; }, { c: C.white, b: 0.1, th: 0.015 });
-    const iris = {
-      kind: 'area', m: Math.PI * 1.45 * 1.45,
-      at(rr) { const a = rr() * Math.PI * 2, s = 0.55 + 0.9 * Math.sqrt(rr()); const streak = Math.round(a * 30) / 30; return [Math.cos(streak + gauss(rr) * 0.004) * s, Math.sin(streak + gauss(rr) * 0.004) * s, 0]; },
-      c: (rr) => lerp3(C.life, C.ice, rr()), b: 0.12,
-    };
-    const mosaic = [];
-    for (let k = 0; k < 160; k++) {
-      let x, y;
-      do { x = (r() * 2 - 1) * 6.5; y = (r() * 2 - 1) * 3.6; } while (Math.abs(y) < 1.95 * Math.max(0, Math.cos((x / 4) * (Math.PI / 2))) + 0.3 && Math.abs(x) < 4.3);
-      mosaic.push(circle([x, y], 0.16 + r() * 0.12, { c: C.life, b: 0.03, n: 24 }));
+    const lidY = (x, sgn) => sgn * (sgn > 0 ? 1.95 : 1.55) * Math.pow(Math.max(0, Math.cos((x / 4.1) * (Math.PI / 2))), 1.25);
+    const lid = (sgn, b, dy = 0, th = 0.015) => curve((t) => { const x = -4.1 + t * 8.2; return [x, lidY(x, sgn) + dy * Math.cos((x / 4.1) * Math.PI / 2), 0.05]; }, { c: C.warmWhite, b, th, n: 200 });
+    const prims = [lid(1, 0.14, 0, 0.02), lid(-1, 0.1), lid(1, 0.05, 0.55), lid(-1, 0.03, -0.35)];
+    // 睫毛：上睑一排弯弯的短线
+    for (let k = 0; k < 34; k++) {
+      const x = -3.2 + (k / 33) * 6.4, y = lidY(x, 1), a = Math.PI / 2 + (x / 4.1) * 0.9;
+      prims.push(curve((t) => [x + Math.cos(a) * t * 0.55 - t * t * 0.12 * Math.sign(x || 1), y + Math.sin(a) * t * 0.55 - t * t * 0.08, 0.05], { c: C.warmWhite, b: 0.06, n: 12 }));
     }
-    compose(N, pos, col, [lid(1), lid(-1), iris, circle([0, 0], 1.45, { c: C.life, b: 0.1 }), circle([0, 0], 0.55, { c: C.white, b: 0.1 }), ...mosaic], 308);
+    // 巩膜：眼睑之间淡淡的一层，越靠眼角越暗
+    prims.push({ kind: 'area', m: 10, at(rr) { let x, y; do { x = (rr() * 2 - 1) * 4.0; y = (rr() * 2 - 1) * 1.9; } while (y > lidY(x, 1) || y < lidY(x, -1)); return [x, y, 0]; }, c: (rr, u) => C.warmWhite, b: 0.012 });
+    // 虹膜：放射状纤维，内圈琥珀、外圈蓝灰，外缘一圈深色的角膜缘
+    const RI = 1.45, RP = 0.5;
+    prims.push({
+      kind: 'area', m: Math.PI * RI * RI * 1.5,
+      at(rr) { const a = Math.round(rr() * 160) / 160 * Math.PI * 2 + gauss(rr) * 0.006, s = RP + (RI - RP) * Math.sqrt(rr()); const q = [Math.cos(a) * s, Math.sin(a) * s, 0.12]; q.s = (s - RP) / (RI - RP); return q; },
+      c: (rr) => lerp3(lerp3(C.amber, C.life, 0.5), lerp3(C.ice, C.deep, 0.35), Math.pow(rr(), 0.8)), b: 0.14, iris: true,
+    });
+    prims.push(circle([0, 0, 0.12], RI, { c: C.deep, b: 0.18, th: 0.03 }), circle([0, 0, 0.12], RP, { c: C.white, b: 0.06, pupil: true }));
+    // 角膜高光：左上一大一小两个亮点
+    prims.push(disc([-0.48, 0.5, 0.2], 0.2, { c: C.white, b: 0.5 }), disc([0.42, -0.42, 0.2], 0.07, { c: C.white, b: 0.5 }));
+    // 周围的细胞镶嵌
+    for (let k = 0; k < 140; k++) {
+      let x, y;
+      do { x = (r() * 2 - 1) * 6.8; y = (r() * 2 - 1) * 3.8; } while (Math.abs(x) < 4.6 && Math.abs(y) < 2.9);
+      prims.push(circle([x, y], 0.16 + r() * 0.12, { c: C.life, b: 0.025, n: 24 }));
+    }
+    const comp = compose(N, pos, col, prims, 308);
+    const L = comp.list;
+    return function update(ctx) {
+      // 瞳孔每拍收缩一下再放开
+      const k = 1 - 0.28 * Math.exp(-(ctx.beat % 1) * 5);
+      for (let i = 0; i < N; i++) {
+        const q = L[comp.role[i]];
+        if (!q.iris && !q.pupil) continue;
+        const o = i * 3, x = comp.base[o], y = comp.base[o + 1], s = Math.hypot(x, y);
+        if (q.pupil) { pos[o] = x * k; pos[o + 1] = y * k; continue; }
+        const t = (s - RP) / (RI - RP), s2 = RP * k + (RI - RP * k) * t;
+        pos[o] = (x / s) * s2; pos[o + 1] = (y / s) * s2;
+      }
+    };
   },
 };

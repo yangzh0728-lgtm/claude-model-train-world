@@ -2,6 +2,8 @@
 // 纯函数式：同一个 t 永远得到同一帧。
 import { getShot, chapterOpts } from './ch/index.js';
 import scenes from './scenes.json';
+import { chapterInk } from './palette.js';
+import { sup } from './util.js';
 
 const META = Object.fromEntries(scenes.map((s) => [s.id, s]));
 
@@ -57,14 +59,33 @@ export function createDirector({ clock, swarm, camera, terminal }) {
 
     const meta = META[info.shot.id] ?? {};
     const style = s.style ?? meta.style ?? 'dark';
-    const page = { style, title: meta.title, caption: meta.caption, notes: s.notes, block: s.block, header: s.header, titleY: s.titleY };
+    const page = { style, title: meta.title, caption: meta.caption && sup(meta.caption), notes: s.notes, block: s.block, header: s.header, titleY: s.titleY, titleX: s.titleX };
     terminal.draw(info, { ...chapterOpts(info.shot.ch), ...s.term, page });
+
+    // 风格转场：跨在镜头交界处的一拍里（交界前半拍到交界后半拍），按前后风格挑一种遮罩
+    const styleOf = (sh) => (sh ? META[sh.id]?.style ?? 'dark' : null);
+    const prevSh = clock.shots[info.shot.index - 1], nextSh = clock.shots[info.shot.index + 1];
+    const W = 0.5;
+    let tr = null;
+    if (info.lb < W && prevSh && styleOf(prevSh) !== style) tr = [styleOf(prevSh), style, (info.lb + W) / (2 * W)];
+    else if (nextSh && info.shot.endBeat - info.beat < W && styleOf(nextSh) !== style) tr = [style, styleOf(nextSh), (W - (info.shot.endBeat - info.beat)) / (2 * W)];
+    let transType = 0, paperA = style === 'dark' ? 0 : 1, paperB = paperA, trans = 0;
+    if (tr && (tr[0] === 'dark') !== (tr[1] === 'dark')) {
+      const [a, b, q] = tr;
+      paperA = a === 'dark' ? 0 : 1; paperB = b === 'dark' ? 0 : 1; trans = q;
+      transType = a === 'dark' ? (b === 'sheet' ? 3 : 1) : (a === 'sheet' ? 4 : 2);
+    }
 
     const end = clock.duration;
     return {
       info,
       fx: {
-        paper: style === 'dark' ? 0 : 1,
+        paper: paperA,
+        paperTo: paperB,
+        trans,
+        transType,
+        textPaper: style === 'dark' ? 0 : 1,
+        textInk: chapterInk[info.shot.ch] ?? [1, 1, 1],
         flash: s.flash ?? 0,
         rgb: (s.rgb ?? 0) + (down ? env * energy * 0.0025 : 0),
         bloom: s.bloom,

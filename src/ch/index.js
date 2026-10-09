@@ -1,5 +1,6 @@
 // 章节表。还没做的章节用占位镜头：粒子拼出镜头编号，终端打出分镜描述，
 // 这样全片从头到尾都能播放，随时能看整体节奏。
+import { sup } from '../util.js';
 import ch00 from './ch00_boot.js';
 import ch01 from './ch01_origin.js';
 import ch02 from './ch02_laws.js';
@@ -15,6 +16,7 @@ import { range } from '../util.js';
 import { cam } from './helpers.js';
 
 import scenes from '../scenes.json';
+import lyrics from '../lyrics.json';
 
 const TODO = Object.fromEntries(scenes.map((s) => [s.id, s]));
 
@@ -41,8 +43,14 @@ export function chapterOpts(chId) {
   return built[chId]?.term ?? {};
 }
 
-// 所有日志条目，换算成绝对拍号
+// 左下角终端：有歌词时按歌词逐行打出（lyrics.json，按拍对齐），否则用各镜头的日志
 export function collectLog(clock) {
+  if (lyrics?.lines?.length) return lyrics.lines.map((l) => ({ beat: l.beat, text: sup(l.en) }));
+  return collectShotLog(clock);
+}
+
+// 各镜头的日志条目，换算成绝对拍号
+export function collectShotLog(clock) {
   const out = [];
   for (const s of clock.shots) {
     const entries = built[s.ch]?.log?.[s.id] ?? (TODO[s.id] ? [[0, `# ${s.id} ${TODO[s.id].desc}`, { cps: 40 }], [1, TODO[s.id].text, { cps: 40 }]] : []);

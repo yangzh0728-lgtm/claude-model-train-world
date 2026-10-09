@@ -7,15 +7,14 @@ export default {
   shots: {
     // 3a 水分子（纸面插图）
     '3a': (f) => ({
-      ...morph(f, shape('water'), { dur: 0.75, stagger: 0.2, noise: 0.5 }), energy: 0.6, matB: T(0, 0.9, 0),
-      cam: cam([0, 0.2, lerp(10.4, 10, f.p)], [0, 0.2, 0]), titleY: 950,
+      ...morph(f, shape('water'), { dur: 0.75, stagger: 0.2, noise: 0.5 }), energy: 0.6, matB: T(0, 1.0, 0),
+      cam: cam([0, 0.3, lerp(11, 10.5, f.p)], [0, 0.3, 0]), titleY: 930,
     }),
 
     // 3b 苯环，单双键每拍交替
     '3b': (f) => ({
       ...morph(f, shape('benzene'), { dur: 0.6, stagger: 0.15, noise: 0.6 }),
-      matB: RX(Math.sin(f.t * 0.8) * 0.25),
-      cam: cut(f.bar, [cam([0, 0, lerp(8, 7, f.p)])]),
+      cam: cut(f.bar, [cam([0, 0, lerp(8.5, 7.5, f.p)])]),
     }),
 
     // 3c 肽链折叠成 α 螺旋（工程图纸）

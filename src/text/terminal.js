@@ -100,14 +100,17 @@ export class Terminal {
     } else {
       // 纸面插图：金色衬线大标题 + 右下角斜体图注
       if (page.title) {
-        g.font = `700 ${150 * u}px ${SERIF}`;
+        // 标题放在下方时会和左下角歌词撞上：改成右对齐、字号小一点，让出左边
+        const low = (page.titleY ?? 700) > 740 && page.titleX == null;
+        g.font = `700 ${(low ? 112 : 150) * u}px ${SERIF}`;
         g.letterSpacing = `${6 * u}px`;
-        g.textAlign = 'center';
-        const ty = (page.titleY ?? 700) * u;
+        g.textAlign = low ? 'right' : 'center';
+        const ty = (low ? Math.min(page.titleY, 950) : page.titleY ?? 700) * u;
         g.fillStyle = GOLD; g.globalAlpha = a;
-        g.fillText(page.title, W / 2, ty);
+        const tx = low ? W - 56 * u : page.titleX != null ? page.titleX * u : W / 2;
+        g.fillText(page.title, tx, ty);
         g.lineWidth = 2 * u; g.strokeStyle = inkS(0.85);
-        g.strokeText(page.title, W / 2, ty);
+        g.strokeText(page.title, tx, ty);
         g.globalAlpha = 1; g.letterSpacing = '0px';
       }
       if (page.caption) {

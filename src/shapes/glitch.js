@@ -1,55 +1,76 @@
 // 第 7 章 崩溃 + 第 9 章用的手：浮点比特、手、拼错的字
 import { rng, gauss, clamp, lerp, easeOut } from '../util.js';
 import { C } from '../palette.js';
-import { compose, seg, poly, curve, circle, rect, rectFill, disc, ball, text } from './kit.js';
+import { compose, seg, poly, curve, circle, rect, rectFill, disc, ball, text, orb, rod, ellipsoid, lit } from './kit.js';
 
 const hash = (a, b = 0) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); };
 const scaleCol = (comp, col, i, k) => { const o = i * 3; col[o] = comp.baseCol[o] * k; col[o + 1] = comp.baseCol[o + 1] * k; col[o + 2] = comp.baseCol[o + 2] * k; };
 
-// 手的轮廓：手掌 + 若干手指（胶囊形），线稿加一层淡淡的填充
+// 立体的手：椭球手掌 + 一节节圆柱手指（关节是小球）+ 拇指 + 前臂，手心朝镜头，用 lit() 打光
 function handPrims(fingers, color, b) {
   const prims = [];
-  const palm = curve((t) => {
-    const a = t * Math.PI * 2;
-    const x = Math.cos(a) * 1.05, y = Math.sin(a) * 1.2;
-    return [x * (y < 0 ? 0.88 + 0.12 * (1 + y / 1.2) : 1), y - 0.6, 0];
-  }, { n: 160, c: color, b, th: 0.012 });
-  prims.push(palm, { ...rectFill(-0.85, -1.5, 0.85, 0.4), c: color, b: b * 0.12, w: 0.5 });
-  // 手腕
-  prims.push(seg([-0.75, -1.7], [-0.72, -3.3], { c: color, b, th: 0.012 }), seg([0.75, -1.7], [0.72, -3.3], { c: color, b, th: 0.012 }));
-  const capsule = (base, ang, len, w) => {
-    const dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx;
-    const p = (s, o) => [base[0] + dx * s + nx * o, base[1] + dy * s + ny * o, 0];
-    const tip = Array.from({ length: 17 }, (_, i) => { const a = Math.PI * (i / 16); return p(len + Math.sin(a) * w, Math.cos(a) * w); });
-    return [poly([p(0, w), p(len, w), ...tip, p(len, -w), p(0, -w)], { c: color, b, th: 0.01 }),
-      ...[0.36, 0.68].map((k) => seg(p(len * k, -w * 0.8), p(len * k, w * 0.8), { c: color, b: b * 0.4 }))];
-  };
-  // 四（或更多）根手指沿掌心上沿均匀铺开，最外侧是拇指
+  const o = { c: color, b };
+  prims.push(ellipsoid([0, -0.55, 0], [0.98, 1.12, 0.3], { ...o, w: 1.2 }));
+  prims.push(rod([0, -1.45, -0.02], [0, -3.4, -0.08], 0.55, { ...o, b: b * 0.8 }));
+  prims.push(ellipsoid([0, -1.5, 0], [0.62, 0.3, 0.32], o));
   const n = fingers - 1;
+  const LEN = n > 4 ? [0.9, 1.0, 1.05, 1.0, 0.92, 0.8] : [0.9, 1.0, 0.95, 0.75];
   for (let k = 0; k < n; k++) {
     const t = n === 1 ? 0.5 : k / (n - 1);
-    const a = lerp(2.2, 1.0, t);
-    const base = [Math.cos(a) * 0.98, Math.sin(a) * 1.12 - 0.6];
-    const len = [1.75, 2.05, 2.15, 1.95, 1.65, 1.45][k % 6] * (n > 4 ? 0.95 : 1);
-    prims.push(...capsule(base, lerp(2.05, 1.12, t), len, 0.23));
+    const x = lerp(-0.8, 0.72, t), fan = lerp(0.16, -0.08, t);
+    const L = LEN[k % LEN.length], r0 = 0.17 - 0.02 * (k === n - 1 && n === 4 ? 1 : 0);
+    let p = [x, 0.42 - Math.abs(t - 0.45) * 0.25, 0.02];
+    let dir = [Math.sin(fan), Math.cos(fan), 0];
+    const segs = [0.62, 0.42, 0.34];
+    segs.forEach((sl, j) => {
+      const len = sl * L, r = r0 * (1 - j * 0.1);
+      // 每节往手心方向微微弯
+      dir = [dir[0], dir[1] * Math.cos(0.12) , dir[1] * Math.sin(0.12) + dir[2]];
+      const q = [p[0] + dir[0] * len, p[1] + dir[1] * len, p[2] + dir[2] * len];
+      prims.push(orb(p, r * 0.97, o), rod(p, q, r, o));
+      p = q;
+    });
+    prims.push(orb(p, r0 * 0.82, o));
   }
-  prims.push(...capsule([0.85, -0.85], 0.75, 1.45, 0.27));
+  // 拇指：从手掌右下侧斜着伸出，往前（朝镜头）一点
+  let p = [0.78, -0.85, 0.12], dir = [0.72, 0.6, 0.35];
+  const dl = Math.hypot(...dir); dir = dir.map((v) => v / dl);
+  [0.62, 0.45, 0.36].forEach((len, j) => {
+    const r = 0.21 - j * 0.02;
+    const q = [p[0] + dir[0] * len, p[1] + dir[1] * len, p[2] + dir[2] * len];
+    prims.push(orb(p, r, o), rod(p, q, r, o));
+    p = q; dir = [dir[0] * 0.8, dir[1] + 0.25, dir[2]];
+    const l2 = Math.hypot(...dir); dir = dir.map((v) => v / l2);
+  });
+  prims.push(orb(p, 0.17, o));
   return prims;
 }
 
+// 把一组图元整体变换：旋转 rot(v) + 缩放 k + 平移 t，法线跟着旋转
+const xform = (prims, rot, k, t) => prims.map((p) => ({
+  ...p,
+  at: (r, u) => { const q = p.at(r, u), v = rot(q); const out = [v[0] * k + t[0], v[1] * k + t[1], v[2] * k + t[2]]; out.orig = q; return out; },
+  normal: p.normal ? (q) => rot(p.normal(q.orig)) : undefined,
+}));
+
 export default {
-  // 手：fingers 根手指；7e 是六根，第 9 章是正常的五根
-  hand(N, pos, col, { fingers = 5, color = 'white' } = {}) {
-    compose(N, pos, col, handPrims(fingers, C[color], 0.12), 701 + fingers);
+  // 手：fingers 根手指；7e 是六根，第 9 章是正常的五根。整只手在空间里慢慢转
+  hand(N, pos, col, { fingers = 5, color = 'white', b = 0.24 } = {}) {
+    const comp = compose(N, pos, col, handPrims(fingers, C[color], b), 701 + fingers);
+    return function update(ctx) {
+      lit(comp, pos, col, N, { ry: Math.sin(ctx.t * 0.7) * 0.6, rx: 0.15 + Math.sin(ctx.t * 0.5) * 0.15, center: [0, -0.5, 0] });
+    };
   },
 
-  // 9a–9c 两只手：左边一只（镜像），右边一只，伸向中间
+  // 9a–9c 两只手：左右各一只横过来，指尖朝中间；gap = 0 时指尖相碰
   hands(N, pos, col, { gap = 1 } = {}) {
-    const L = handPrims(5, C.warmWhite, 0.11), R = handPrims(5, C.gold, 0.11);
-    // 每只手旋转 90° 横过来，指尖朝中间；gap = 0 时指尖相碰
-    const dx = lerp(3.95, 5.7, gap);
-    const place = (prims, sx, dy) => prims.map((p) => ({ ...p, at: (r, u) => { const q = p.at(r, u); return [sx * (q[1] + 3.3) * 0.62 - sx * dx, -sx * q[0] * 0.62 + dy, q[2]]; } }));
-    compose(N, pos, col, [...place(L, 1, -0.25), ...place(R, -1, 0.25)], 790);
+    const dx = lerp(4.22, 6.0, gap), k = 0.75;
+    const L = xform(handPrims(5, C.warmWhite, 0.2), (v) => [v[1], -v[0], v[2]], k, [-dx + 3.3 * k, -0.25, 0]);
+    const R = xform(handPrims(5, C.gold, 0.2), (v) => [-v[1], -v[0], v[2]], k, [dx - 3.3 * k, 0.25, 0]);
+    const comp = compose(N, pos, col, [...L, ...R], 790);
+    return function update(ctx) {
+      lit(comp, pos, col, N, { ry: Math.sin(ctx.t * 0.4) * 0.25, rx: 0.2 });
+    };
   },
 
   // 7d IEEE-754 单精度：32 个比特格，乱翻，最后定格在 NaN
