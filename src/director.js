@@ -30,16 +30,22 @@ export function createDirector({ clock, swarm, camera, terminal }) {
       if (sh?.update && sh.lastT !== t) { sh.update(info); sh.version++; sh.lastT = t; }
     }
 
-    // 每小节第一拍轻微闪一下（节拍同步的直观检查）
-    const downbeat = info.beatInBar < 1 ? Math.exp(-info.beatInBar * 5) * 0.12 : 0;
-    swarm.apply({ ...s, pulse: (s.pulse ?? 0) + downbeat }, t, (height / 1080) * 22);
+    // 节拍冲击：每拍亮一下、粒子被踢散一下、镜头推一下；小节第一拍更重，并带镜头震动和色差
+    const beatNo = Math.floor(info.beat);
+    const env = info.beat >= 0 ? Math.exp(-(info.beat - beatNo) * 7) : 0;
+    const down = info.beatInBar < 1;
+    const energy = s.energy ?? 1;
+    const hit = env * energy * (down ? 1 : 0.5);
+    swarm.apply({ ...s, pulse: (s.pulse ?? 0) + hit * 0.2, kick: (s.kick ?? 0) + hit * 0.09, kickSeed: beatNo % 97 }, t, (height / 1080) * 22);
 
     const c = s.cam ?? { pos: [0, 0, 10], look: [0, 0, 0], fov: 40 };
-    camera.position.set(...c.pos);
+    const shake = down ? env * energy * 0.09 : 0;
+    camera.position.set(c.pos[0] + Math.sin(beatNo * 12.9898) * shake, c.pos[1] + Math.sin(beatNo * 78.233) * shake, c.pos[2]);
     camera.up.set(0, 1, 0);
     camera.lookAt(...c.look);
-    if (camera.fov !== (c.fov ?? 40) || camera.aspect !== width / height) {
-      camera.fov = c.fov ?? 40;
+    const fov = (c.fov ?? 40) - hit * 2.2;
+    if (camera.fov !== fov || camera.aspect !== width / height) {
+      camera.fov = fov;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
     }
@@ -51,7 +57,7 @@ export function createDirector({ clock, swarm, camera, terminal }) {
       info,
       fx: {
         flash: s.flash ?? 0,
-        rgb: s.rgb ?? 0,
+        rgb: (s.rgb ?? 0) + (down ? env * energy * 0.0025 : 0),
         bloom: s.bloom,
         exposure: s.exposure,
         fade: Math.min(1, Math.max(0, (end - t) / 1.5)),

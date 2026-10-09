@@ -77,7 +77,7 @@ export default {
 
     // 电子每拍跃迁一次：1→2→3→1…，跃迁本身用 0.25 拍完成
     return function update(ctx) {
-      const beat = ctx.beat;
+      const beat = ctx.beat * 2;   // 每半拍跃迁一次
       const k = Math.floor(beat);
       const f = clamp((beat - k) / 0.25);
       const from = radii[((k - 1) % 3 + 3) % 3], to = radii[(k % 3 + 3) % 3];

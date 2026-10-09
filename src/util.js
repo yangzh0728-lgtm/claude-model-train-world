@@ -34,6 +34,13 @@ export function hex(h) {
 
 export function mixColor(a, b, t) { return lerp3(a, b, t); }
 
+// 卡点进度：在 [a, b] 拍之间每拍向前“跳”一格，每一跳用 0.25 拍完成
+export function steps(lb, a, b) {
+  const x = clamp((lb - a) / (b - a)) * (b - a);
+  const k = Math.floor(x), f = x - k;
+  return clamp((k + expoOut(f * 4)) / (b - a));
+}
+
 // 把一个镜头按拍切成几段：seq(lb, [[4, fn], [8, fn]]) 依次调用 fn(局部拍, 段内进度)
 export function seq(lb, parts) {
   let start = 0;

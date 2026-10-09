@@ -15,7 +15,7 @@ attribute vec3 cA;
 attribute vec3 cB;
 attribute vec4 aSeed;
 uniform mat4 uMatA, uMatB;
-uniform float uP, uStagger, uNoise, uDrift, uTime, uSize, uScale, uPulse, uTintMix;
+uniform float uP, uStagger, uNoise, uDrift, uTime, uSize, uScale, uPulse, uTintMix, uKick, uKickSeed;
 uniform int uEase;
 uniform vec3 uTint;
 varying vec3 vCol;
@@ -37,6 +37,10 @@ void main(){
   float bump=sin(3.14159265*lp);
   if(uNoise>0.0 && bump>0.001){
     pos+=noise3(pos*0.45+aSeed.yzw*0.6+vec3(0.0,0.0,uTime*0.2))*uNoise*bump;
+  }
+  // 节拍冲击：每拍粒子被“踢”散一下再收回
+  if(uKick>0.0){
+    pos+=noise3(pos*0.8+vec3(aSeed.x*7.0,uKickSeed,0.0))*uKick;
   }
   if(uDrift>0.0){
     pos+=noise3(pos*1.7+vec3(uTime*0.25,0.0,aSeed.y*3.0))*uDrift;
@@ -84,7 +88,7 @@ export class Swarm {
       uMatB: { value: new THREE.Matrix4() },
       uP: { value: 0 }, uStagger: { value: 0 }, uNoise: { value: 0 }, uDrift: { value: 0 },
       uTime: { value: 0 }, uSize: { value: 1 }, uScale: { value: 1 }, uPulse: { value: 0 },
-      uEase: { value: 0 }, uTint: { value: new THREE.Color(1, 1, 1) }, uTintMix: { value: 0 },
+      uEase: { value: 0 }, uKick: { value: 0 }, uKickSeed: { value: 0 }, uTint: { value: new THREE.Color(1, 1, 1) }, uTintMix: { value: 0 },
       uOpacity: { value: 1 },
     };
     this.material = new THREE.ShaderMaterial({
@@ -114,10 +118,12 @@ export class Swarm {
     u.uMatA.value.copy(s.matA ?? IDENT);
     u.uMatB.value.copy(s.matB ?? s.matA ?? IDENT);
     u.uP.value = s.to ? s.p ?? 0 : 0;
-    u.uStagger.value = s.stagger ?? 0.35;
+    u.uStagger.value = s.stagger ?? 0.15;
     u.uNoise.value = s.noise ?? 0.6;
     u.uDrift.value = s.drift ?? 0.012;
-    u.uEase.value = { smooth: 0, expoOut: 1, in: 2 }[s.ease ?? 'smooth'];
+    u.uEase.value = { smooth: 0, expoOut: 1, in: 2 }[s.ease ?? 'expoOut'];
+    u.uKick.value = s.kick ?? 0;
+    u.uKickSeed.value = s.kickSeed ?? 0;
     u.uSize.value = s.size ?? 1;
     u.uOpacity.value = s.opacity ?? 1;
     u.uPulse.value = s.pulse ?? 0;

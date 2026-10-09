@@ -49,7 +49,7 @@ export default {
       { a: 2.5, e: 0.4, size: 0.16, c: C.white, phase: 2.1 },
       { a: 3.7, e: 0.12, size: 0.13, c: C.deep, phase: 4.0 },
     ];
-    for (const p of planets) { p.b = p.a * Math.sqrt(1 - p.e * p.e); p.n = 1.6 / Math.pow(p.a, 1.5); }
+    for (const p of planets) { p.b = p.a * Math.sqrt(1 - p.e * p.e); p.n = 3.2 / Math.pow(p.a, 1.5); }
     const role = new Uint8Array(N), pl = new Uint8Array(N), s = new Float32Array(N), off = new Float32Array(N * 3);
     const base = new Float32Array(N * 3);
     for (let i = 0; i < N; i++) {
@@ -159,7 +159,7 @@ export default {
           continue;
         }
         const L = lines[li[i]];
-        const d = ((u[i] + ctx.t * 0.9 / L.total) % 1) * L.total;
+        const d = ((u[i] + ctx.t * 2.2 / L.total) % 1) * L.total;
         const [x, y] = sample(L, d);
         const a = rot[i];
         pos[o] = x + off[o]; pos[o + 1] = y * Math.cos(a) + off[o + 1]; pos[o + 2] = y * Math.sin(a) + off[o + 2];
@@ -171,7 +171,7 @@ export default {
   slits(N, pos, col) {
     const r = rng(34);
     const wall = -1.2, screen = 3.9, d = 0.55, gap = 0.12, H = 3.2;
-    const lambda = 0.42, k = (2 * Math.PI) / lambda, speed = 1.0, omega = k * speed;
+    const lambda = 0.42, k = (2 * Math.PI) / lambda, speed = 1.8, omega = k * speed;
     const role = new Uint8Array(N), base = new Float32Array(N * 3);
     const intensity = (y) => {
       const r1 = Math.hypot(screen - wall, y - d), r2 = Math.hypot(screen - wall, y + d);

@@ -70,7 +70,7 @@ export class Terminal {
       if (e.until != null && info.beat >= e.until) continue;
       const elapsed = info.beat - e.beat;
       const text = typeof e.text === 'function' ? e.text(elapsed, info) : e.text;
-      const n = Math.min(text.length, Math.floor(elapsed * (e.cps ?? 14)));
+      const n = Math.min(text.length, Math.floor(elapsed * (e.cps ?? 24)));
       visible.push({ text: text.slice(0, n), done: n >= text.length, e });
     }
     const center = opt.layout === 'center';

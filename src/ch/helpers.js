@@ -12,6 +12,8 @@ export const mul = (...ms) => ms.reduce((acc, m) => acc.multiply(m), new THREE.M
 
 export const cam = (pos, look = [0, 0, 0], fov = 40) => ({ pos, look, fov });
 export const lerpCam = (a, b, t) => ({ pos: lerp3(a.pos, b.pos, t), look: lerp3(a.look, b.look, t), fov: lerp(a.fov ?? 40, b.fov ?? 40, t) });
+// 每小节硬切一个机位：cut(f.bar, [机位1, 机位2, …])
+export const cut = (bar, list) => list[((bar % list.length) + list.length) % list.length];
 // 绕 y 轴环绕：角度、半径、高度
 export const orbit = (angle, radius, height, look = [0, 0, 0], fov = 40) =>
   cam([look[0] + Math.sin(angle) * radius, look[1] + height, look[2] + Math.cos(angle) * radius], look, fov);
