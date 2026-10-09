@@ -11,8 +11,10 @@ import compute from './compute.js';
 import network from './network.js';
 import learn from './learn.js';
 import glitch from './glitch.js';
+import transformer from './transformer.js';
+import finale from './finale.js';
 
-const registry = { ...basic, ...cosmos, ...laws, ...text, ...science, ...life, ...compute, ...network, ...learn, ...glitch };
+const registry = { ...basic, ...cosmos, ...laws, ...text, ...science, ...life, ...compute, ...network, ...learn, ...glitch, ...transformer, ...finale };
 
 let N = 0;
 const cache = new Map();

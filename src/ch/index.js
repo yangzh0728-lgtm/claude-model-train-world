@@ -8,6 +8,8 @@ import ch04 from './ch04_compute.js';
 import ch05 from './ch05_network.js';
 import ch06 from './ch06_learn.js';
 import ch07 from './ch07_break.js';
+import ch08 from './ch08_model.js';
+import ch09 from './ch09_hello.js';
 import { shape } from '../shapes/index.js';
 import { range } from '../util.js';
 import { cam } from './helpers.js';
@@ -29,7 +31,7 @@ function placeholder(id) {
   });
 }
 
-const built = { ch00, ch01, ch02, ch03, ch04, ch05, ch06, ch07 };
+const built = { ch00, ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09 };
 
 export function getShot(chId, shotId) {
   return built[chId]?.shots[shotId] ?? placeholder(shotId);
