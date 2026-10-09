@@ -145,7 +145,7 @@ async function renderRange(from, to, out, audio) {
 }
 
 // ---------- 主流程 ----------
-const stamp = `${W}x${H}_${FPS}fps`;
+const stamp = `${TIMELINE ? basename(TIMELINE, '.json') + '_' : ''}${W}x${H}_${FPS}fps`;
 if (flag('full')) {
   // 全片按章节分段：每段单独文件，已完成的段落会跳过，可以随时中断后续跑
   // 用主时钟换算，这样有真实节拍表（beats）时段落边界也对得上
