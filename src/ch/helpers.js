@@ -1,6 +1,6 @@
 // 章节编写用的小工具：矩阵与相机
 import * as THREE from 'three';
-import { lerp3, lerp } from '../util.js';
+import { lerp3, lerp, range } from '../util.js';
 
 export const T = (x, y, z) => new THREE.Matrix4().makeTranslation(x, y, z);
 export const RY = (a) => new THREE.Matrix4().makeRotationY(a);
@@ -17,3 +17,10 @@ export const cut = (bar, list) => list[((bar % list.length) + list.length) % lis
 // 绕 y 轴环绕：角度、半径、高度
 export const orbit = (angle, radius, height, look = [0, 0, 0], fov = 40) =>
   cam([look[0] + Math.sin(angle) * radius, look[1] + height, look[2] + Math.cos(angle) * radius], look, fov);
+
+// 从上一场景的最后形态变形到新形态：morph(f, shape('x'), { dur: 1, at: 0, ... })
+export const morph = (f, to, o = {}) => {
+  const prev = f.prev();
+  const at = o.at ?? 0, dur = o.dur ?? 1;
+  return { from: prev.shape, matA: prev.mat, to, p: range(f.lb, at, at + dur), ...o };
+};

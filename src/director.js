@@ -26,8 +26,10 @@ export function createDirector({ clock, swarm, camera, terminal }) {
     const s = getShot(info.shot.ch, info.shot.id)(withHelpers(info));
 
     // 动态形态按当前时间重算
-    for (const sh of [s.from, s.to]) {
-      if (sh?.update && sh.lastT !== t) { sh.update(info); sh.version++; sh.lastT = t; }
+    // 正在变形时，起始形态来自上一场景，按“已完成”状态（p = 1）计算
+    const fromCtx = s.to ? { ...info, p: s.fromP ?? 1 } : info;
+    for (const [sh, ctx] of [[s.from, fromCtx], [s.to, info]]) {
+      if (sh?.update && sh.lastT !== t) { sh.update(ctx); sh.version++; sh.lastT = t; }
     }
 
     // 节拍冲击：每拍亮一下、粒子被踢散一下、镜头推一下；小节第一拍更重，并带镜头震动和色差

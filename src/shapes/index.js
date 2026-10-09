@@ -5,8 +5,9 @@ import basic from './basic.js';
 import cosmos from './cosmos.js';
 import laws from './laws.js';
 import text from './text.js';
+import science from './science.js';
 
-const registry = { ...basic, ...cosmos, ...laws, ...text };
+const registry = { ...basic, ...cosmos, ...laws, ...text, ...science };
 
 let N = 0;
 const cache = new Map();
