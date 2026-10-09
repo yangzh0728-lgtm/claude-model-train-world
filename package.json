@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "render": "node scripts/render.mjs",
-    "metronome": "node scripts/make-metronome.mjs"
+    "metronome": "node scripts/make-metronome.mjs",
+    "score": "python3 scripts/make-score.py public/audio/score.wav && ffmpeg -y -v error -i public/audio/score.wav -af loudnorm=I=-14:TP=-1:LRA=11 -c:a libmp3lame -b:a 320k -ar 48000 public/audio/score.mp3"
   },
   "dependencies": {
     "@fontsource/eb-garamond": "^5.3.0",

@@ -1,6 +1,6 @@
 {
   "title": "model.train(world);",
-  "audio": "audio/metronome.wav",
+  "audio": "audio/score.mp3",
   "bpm": 120,
   "offset": 0,
   "beatsPerBar": 4,

@@ -44,6 +44,7 @@ src/
 scripts/
   render.mjs         离线渲染 + ffmpeg 编码
   make-metronome.mjs 生成占位节拍器音轨
+  make-score.py      生成配乐（numpy 合成，按 9 章分段编曲），npm run score 输出 public/audio/score.mp3
 ```
 
 ## 换成真歌
