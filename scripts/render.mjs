@@ -14,15 +14,21 @@
 //   --headed                     有窗口模式（个别系统无头模式不走 GPU 时使用）
 //   --no-audio                   不配音
 //   --dist dist                  网页构建目录（--build 时重新构建到这里）
+//
+// 换歌版本：TIMELINE=src/timelines/brain-dance.json npm run render -- --full --build
+//（默认构建到 dist-brain-dance，不和原版的 dist 混用）
 import http from 'node:http';
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync, createReadStream, renameSync } from 'node:fs';
-import { join, extname, dirname, resolve } from 'node:path';
+import { join, extname, dirname, resolve, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import { createClock } from '../src/clock.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const tl = JSON.parse(readFileSync(join(root, 'src/timeline.json'), 'utf8'));
+const TIMELINE = process.env.TIMELINE;
+const tl = JSON.parse(readFileSync(TIMELINE ? resolve(TIMELINE) : join(root, 'src/timeline.json'), 'utf8'));
+const clock = createClock(tl);
 
 // ---------- 参数 ----------
 const argv = process.argv.slice(2);
@@ -37,12 +43,12 @@ const browserPath = opt('browser', process.env.CHROME_PATH);
 const audioFile = join(root, 'public', tl.audio);
 const withAudio = !flag('no-audio') && existsSync(audioFile);
 const ext = codec === 'prores' ? '.mov' : '.mp4';
-const DIST = resolve(root, opt('dist', 'dist'));
+const DIST = resolve(root, opt('dist', TIMELINE ? `dist-${basename(TIMELINE, '.json')}` : 'dist'));
 
 // ---------- 构建 ----------
 if (flag('build') || !existsSync(join(DIST, 'index.html'))) {
   console.log('构建网页…');
-  const r = spawnSync('npx', ['vite', 'build', '--outDir', DIST], { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });
+  const r = spawnSync('npx', ['vite', 'build', '--outDir', DIST], { cwd: root, stdio: 'inherit', shell: process.platform === 'win32', env: { ...process.env, TIMELINE: TIMELINE && resolve(TIMELINE) } });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
@@ -142,13 +148,9 @@ async function renderRange(from, to, out, audio) {
 const stamp = `${W}x${H}_${FPS}fps`;
 if (flag('full')) {
   // 全片按章节分段：每段单独文件，已完成的段落会跳过，可以随时中断后续跑
-  const spb = 60 / tl.bpm;
-  const starts = tl.chapters.map((c) => {
-    const s = tl.shots.find((s) => s.ch === c.id);
-    return (s.bars[0] - 1) * tl.beatsPerBar * spb + tl.offset;
-  });
-  const lastShot = tl.shots[tl.shots.length - 1];
-  const end = Math.max(tl.duration, lastShot.bars[1] * tl.beatsPerBar * spb + tl.offset);
+  // 用主时钟换算，这样有真实节拍表（beats）时段落边界也对得上
+  const starts = tl.chapters.map((c) => clock.timeAt(clock.shots.find((s) => s.ch === c.id).startBeat));
+  const end = clock.duration;
   starts[0] = 0;
   const segDir = join(root, 'out', `segments_${stamp}`);
   const list = [];
