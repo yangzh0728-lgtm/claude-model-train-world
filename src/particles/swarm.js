@@ -116,7 +116,7 @@ export class Swarm {
     this.load('A', s.from);
     this.load('B', s.to ?? s.from);
     u.uMatA.value.copy(s.matA ?? IDENT);
-    u.uMatB.value.copy(s.matB ?? s.matA ?? IDENT);
+    u.uMatB.value.copy(s.matB ?? (s.to ? IDENT : s.matA ?? IDENT));
     u.uP.value = s.to ? s.p ?? 0 : 0;
     u.uStagger.value = s.stagger ?? 0.15;
     u.uNoise.value = s.noise ?? 0.6;
