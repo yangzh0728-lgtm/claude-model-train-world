@@ -8,8 +8,9 @@ import text from './text.js';
 import science from './science.js';
 import life from './life.js';
 import compute from './compute.js';
+import network from './network.js';
 
-const registry = { ...basic, ...cosmos, ...laws, ...text, ...science, ...life, ...compute };
+const registry = { ...basic, ...cosmos, ...laws, ...text, ...science, ...life, ...compute, ...network };
 
 let N = 0;
 const cache = new Map();

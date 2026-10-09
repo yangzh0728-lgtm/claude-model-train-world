@@ -276,7 +276,7 @@ export default {
       let A = 0;
       for (let c = 0; c < gen.length; c++) if (gen[c]) alive[A++] = c;
       const per = (N * 0.85) / Math.max(1, A);
-      const k = Math.min(0.08, (0.12 * D * cell * cell) / per);
+      const k = Math.min(0.08, (0.35 * D * cell * cell) / per);
       for (let i = 0; i < N; i++) {
         if (bg[i]) continue;
         const c = alive[i % Math.max(1, A)], o = i * 3, x = c % GW, y = (c / GW) | 0;
