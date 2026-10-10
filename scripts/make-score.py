@@ -712,7 +712,29 @@ gain = np.ones(N, np.float32)
 for (b, g), nxt in zip(ENERGY, ENERGY[1:] + [(BARS + 3, ENERGY[-1][1])]):
     gain[int(T(b) * SR):int(T(nxt[0]) * SR)] = g
 gain = np.convolve(gain, np.ones(2205) / 2205, mode='same').astype(np.float32)  # 50 ms 过渡
-mix = (bus['drums'] * 0.85 + bus['bass'] * 0.7 + bus['pad'] * 1.5 + bus['keys'] * 1.5 + bus['lead'] * 2.0 + bus['fx'] * 1.3) * gain + reverb(bus['verb']) * 1.4
+# ---------------------------------------------------------------- 均衡：每条总线让出别人的频段，人声要用的 200–500 Hz 和 2–4 kHz 尽量空出来
+def eq(x, points):
+    """零相位静态均衡：points 是 (频率, dB) 列表，在对数频率上线性插值。"""
+    n = x.shape[-1]
+    nfft = 1 << int(np.ceil(np.log2(n)))
+    f = np.fft.rfftfreq(nfft, 1 / SR)
+    fp, gp = zip(*points)
+    g = 10 ** (np.interp(np.log10(np.maximum(f, 1)), np.log10(fp), gp) / 20)
+    return np.fft.irfft(np.fft.rfft(x, nfft) * g, nfft)[..., :n].astype(np.float32)
+
+
+EQ = {
+    'drums': [(20, 0), (60, 1), (200, -1), (350, -4), (700, -1), (2500, 1), (5000, 2), (12000, 0)],
+    'bass': [(20, -12), (35, 0), (100, 0), (250, -3), (600, -6), (2000, -6), (20000, -6)],
+    'pad': [(60, -30), (180, -10), (300, -6), (600, -3), (1500, -2), (3000, -3), (8000, 0), (20000, 0)],
+    'keys': [(60, -24), (120, -6), (250, -3), (400, -4), (1000, 0), (2500, 2), (4500, 3), (9000, 1), (20000, 0)],
+    'lead': [(100, -24), (250, -6), (1000, 0), (3000, -2), (20000, 0)],
+    'fx': [(20, 0), (120, 0), (300, -4), (800, -2), (3000, 0), (20000, 0)],
+}
+for k, pts in EQ.items():
+    bus[k] = eq(bus[k], pts)
+wet = eq(reverb(bus['verb']), [(100, -30), (350, -8), (700, 0), (5000, 0), (9000, -8), (20000, -20)])
+mix = (bus['drums'] * 0.9 + bus['bass'] * 0.7 + bus['pad'] * 1.3 + bus['keys'] * 1.6 + bus['lead'] * 2.0 + bus['fx'] * 1.2) * gain + wet * 1.0
 
 # ---------------------------------------------------------------- 第 7 章：切碎、降采样、磁带停转
 r7 = np.random.default_rng(7)
@@ -757,8 +779,16 @@ fade = np.ones(mix.shape[1])
 fl = int(3 * SR)
 fade[-fl:] = np.linspace(1, 0, fl) ** 1.5
 mix *= fade
-peak = np.percentile(np.abs(mix), 99.95)
-mix = np.tanh(mix / peak * 0.9) * 0.95
+# 只压真正的峰：0.7 以下原样通过，以上软过渡（以前整体走 tanh，所有音都带一点失真，听着发糊）
+def soft_limit(x, knee=0.7):
+    a = np.abs(x)
+    over = knee + (1 - knee) * np.tanh((a - knee) / (1 - knee))
+    return np.where(a < knee, x, np.sign(x) * over)
+
+
+# 整体再往亮里倾斜一点：2–8 kHz 是听清楚的关键，10 kHz 以上的噪声嘶嘶声压下去
+mix = eq(mix, [(30, -3), (80, -1), (300, -1), (1500, 0), (3500, 3), (7000, 3), (11000, 0), (16000, -5), (20000, -8)])
+mix = soft_limit(mix / np.percentile(np.abs(mix), 99.99) * 0.85) * 0.95
 
 # 重音和急停导出给画面（director.js 读）
 import json
