@@ -638,7 +638,6 @@ bassline(94, 97, ['F', 'C', 'G', 'Am'], 94, style='sub', gain=0.33)
 comp(94, 97, ['F', 'C', 'G', 'Am'], 94, 'ballad', gain=0.85)
 for k in range(8):  # 靠近时的心跳
     add('drums', T(96, k), kick(0.3 + 0.07 * k))
-stop(97, 3.5, 0.5)
 rev = crash(2.0)[::-1]
 add('fx', T(98) - len(rev) / SR, rev, gain=0.45, verb=0.3)
 add('fx', T(98), boom(3.0), gain=1.05)
