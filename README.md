@@ -53,6 +53,28 @@ scripts/
 2. 用 librosa 算出每一拍的时间（秒），填进 `beats` 数组；或者只填 `bpm` 和 `offset`。
 3. 按歌曲段落调整各镜头的 `bars`，镜头内容不用改，动画会跟着拍子伸缩。
 
+## 换歌版本：Kevin MacLeod《Brain Dance》
+
+原创歌曲版用 `src/timeline.json`；另一版配现成的授权歌曲，用单独的时间轴 `src/timelines/brain-dance.json`，
+两版共用同一套镜头代码，互不影响。
+
+```bash
+TIMELINE=src/timelines/brain-dance.json npm run dev                       # 实时预览
+TIMELINE=src/timelines/brain-dance.json npm run render -- --full --build  # 全片导出（构建到 dist-brain-dance）
+python3 scripts/make-beatmap.py public/audio/brain-dance.mp3 src/timelines/brain-dance.json --bpm 123 --pickup 1  # 重算节拍表
+```
+
+- 歌曲 124 BPM、3:35。节拍表是 librosa 跟拍后线性回归出的笔直网格（偏差 < 30 ms），第 1 小节是一小节弱起（0.55 s）。
+- 镜头按歌曲段落重排，一共 106 小节：大爆炸落在 16 s 的第一次变化，第 7 章崩溃的第二个镜头落在 126 s 的骤停，
+  第 8 章 "the" 落在 142 s 鼓回来的那一拍，指尖相触（9c）落在 190 s 的最后一段高潮，片尾停在 204 s 的最后一击。
+- 这一版终端不打原创歌词（时间轴里 `"lyrics": null`），改用各镜头自己的日志。
+
+**署名（CC BY 4.0，公开发布时放在视频简介或片尾）：**
+
+> "Brain Dance" Kevin MacLeod (incompetech.com)
+> Licensed under Creative Commons: By Attribution 4.0 License
+> http://creativecommons.org/licenses/by/4.0/
+
 ## 进度
 
 - [x] 项目骨架、粒子引擎、主时钟、终端文字层、后期、逐帧导出
