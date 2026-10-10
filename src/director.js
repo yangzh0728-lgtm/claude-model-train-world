@@ -4,8 +4,18 @@ import { getShot, chapterOpts } from './ch/index.js';
 import scenes from './scenes.json';
 import { chapterInk } from './palette.js';
 import { sup } from './util.js';
+import accents from './accents.json';
 
 const META = Object.fromEntries(scenes.map((s) => [s.id, s]));
+
+// 配乐里的齐奏重音和急停（scripts/make-score.py 导出）：重音时画面猛推一下，急停时画面定格
+const HITS = accents.hits, STOPS = accents.stops;
+const stopAt = (beat) => { for (const [b, l] of STOPS) if (beat >= b && beat < b + l) return b; return null; };
+const hitEnv = (beat) => {
+  let e = 0;
+  for (const [b, v] of HITS) { if (b > beat) break; if (beat - b < 1) e = Math.max(e, v * Math.exp(-(beat - b) * 9)); }
+  return e;
+};
 
 export function createDirector({ clock, swarm, camera, terminal }) {
   const prevCache = new Map();
@@ -26,7 +36,9 @@ export function createDirector({ clock, swarm, camera, terminal }) {
     return out;
   }
 
-  function frame(t, { width, height }) {
+  function frame(realT, { width, height }) {
+    const sb = stopAt(clock.at(realT).beat);
+    const t = sb === null ? realT : clock.timeAt(sb) - 1 / 240;
     const info = clock.at(t);
     const s = getShot(info.shot.ch, info.shot.id)(withHelpers(info));
 
@@ -42,11 +54,12 @@ export function createDirector({ clock, swarm, camera, terminal }) {
     const env = info.beat >= 0 ? Math.exp(-(info.beat - beatNo) * 7) : 0;
     const down = info.beatInBar < 1;
     const energy = s.energy ?? 1;
-    const hit = env * energy * (down ? 1 : 0.5);
-    swarm.apply({ ...s, pulse: (s.pulse ?? 0) + hit * 0.2, kick: (s.kick ?? 0) + hit * 0.09, kickSeed: beatNo % 97 }, t, (height / 1080) * 22);
+    const he = hitEnv(info.beat);
+    const hit = Math.max(env * energy * (down ? 1 : 0.5), he * 1.3);
+    swarm.apply({ ...s, pulse: (s.pulse ?? 0) + hit * 0.2, kick: (s.kick ?? 0) + hit * 0.09, kickSeed: (he * 1.3 > env * energy ? Math.floor(info.beat * 4) + 31 : beatNo) % 97 }, t, (height / 1080) * 22);
 
     const c = s.cam ?? { pos: [0, 0, 10], look: [0, 0, 0], fov: 40 };
-    const shake = down ? env * energy * 0.09 : 0;
+    const shake = (down ? env * energy * 0.09 : 0) + he * 0.14;
     camera.position.set(c.pos[0] + Math.sin(beatNo * 12.9898) * shake, c.pos[1] + Math.sin(beatNo * 78.233) * shake, c.pos[2]);
     camera.up.set(0, 1, 0);
     camera.lookAt(...c.look);
@@ -87,12 +100,12 @@ export function createDirector({ clock, swarm, camera, terminal }) {
         textPaper: style === 'dark' ? 0 : 1,
         textInk: chapterInk[info.shot.ch] ?? [1, 1, 1],
         flash: s.flash ?? 0,
-        rgb: (s.rgb ?? 0) + (down ? env * energy * 0.0025 : 0),
+        rgb: (s.rgb ?? 0) + (down ? env * energy * 0.0025 : 0) + he * 0.004 + (sb === null ? 0 : 0.002),
         bloom: s.bloom,
         glitch: s.glitch ?? 0,
         glitchSeed: Math.floor(t * 24) % 251,
         exposure: s.exposure,
-        fade: Math.min(1, Math.max(0, (end - t) / 1.5)) * (1 - (s.fade ?? 0)),
+        fade: Math.min(1, Math.max(0, (end - realT) / 1.5)) * (1 - (s.fade ?? 0)),
       },
     };
   }
