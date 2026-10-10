@@ -2,8 +2,9 @@
 
     python3 scripts/make-score.py [输出路径]      # 默认 public/audio/score.wav
 
-段落（小节号与 src/timeline.json 一致）。整体照 world.execute(me) 的“顿挫感”来写：断奏钢琴、切分底鼓 + 军鼓、
-全乐队齐奏的重音 hit()，以及所有声部一起掐掉的急停 stop()。重音和急停导出到 src/accents.json，画面跟着猛推 / 定格。
+段落（小节号与 src/timeline.json 一致）。人声几乎每小节都在唱，伴奏给它让位：钢琴用带踏板的伴奏型、贝斯像真人弹、
+鼓手每四小节一个过门，每个音的时间和力度都有一点不齐（HUMAN）。急停 stop() 只有 6 处，都在大段落交界、人声换气的那一拍；
+重音和急停导出到 src/accents.json，画面跟着猛推 / 定格。
     0 启动   1–5    终端嘀嗒、一个钢琴音在试探 → 第 5 小节齐奏、最后一拍全停 → 第 6 小节大爆炸
     1 原初   6–15   铺底和弦 + 钢琴查尔斯顿节奏，半速底鼓
     2 定律  16–25   切分底鼓、二四拍军鼓、钢琴反拍断奏，第 19/21/23/25 小节急停
@@ -39,7 +40,16 @@ def mtof(m):
     return 440.0 * 2 ** ((m - 69) / 12)
 
 
-def add(name, t0, sig, pan=0.0, gain=1.0, verb=0.0):
+# 人味：鼓、钢琴、贝斯每一下都不完全卡在格子上，力度也有起伏（单独的随机数，不影响别的声部）
+HUMAN = {'drums': (0.005, 0.12), 'keys': (0.009, 0.14), 'bass': (0.004, 0.08)}
+hr = np.random.default_rng(11)
+
+
+def add(name, t0, sig, pan=0.0, gain=1.0, verb=0.0, exact=False):
+    if name in HUMAN and not exact:
+        dt, dv = HUMAN[name]
+        t0 = max(0.0, t0 + hr.normal(0, dt))
+        gain *= float(np.clip(1 + hr.normal(0, dv), 0.6, 1.3))
     i0 = int(round(t0 * SR))
     if i0 >= N or len(sig) == 0:
         return
@@ -227,8 +237,28 @@ HOOK_B = [(0, .5, 76), (.5, .5, 79), (1, 1, 81), (2, .5, 79), (2.5, .5, 76), (3,
 
 
 # ---------------------------------------------------------------- 乐句生成器
-def drums(b0, b1, kick_beats=(0, 1, 2, 3), clap_beats=(1, 3), hats='off', kgain=1.0, hgain=1.0, snr=False):
+def tom(freq, gain=1.0):
+    t = tt(0.45)
+    f = freq * (1 + 0.6 * np.exp(-t * 25))
+    return (np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 9) + hp_noise(len(t), 1) * np.exp(-t * 60) * 0.25) * 0.7 * gain
+
+
+def fill(bar, kind=0, gain=1.0):
+    """一小节最后一拍（或两拍）的过门，像鼓手在换句前往前推。"""
+    if kind == 0:  # 军鼓 + 两个嗵鼓
+        for k, (b, w) in enumerate([(3, 'sn'), (3.25, 'sn'), (3.5, 'hi'), (3.75, 'lo')]):
+            add('drums', T(bar, b), snare(0.5 + 0.12 * k) if w == 'sn' else tom(160 if w == 'hi' else 110), gain=gain, verb=0.2)
+    elif kind == 1:  # 两拍的嗵鼓下行
+        for k, b in enumerate((2, 2.5, 2.75, 3, 3.25, 3.5, 3.75)):
+            add('drums', T(bar, b), tom((200, 180, 160, 140, 120, 105, 95)[k]), gain=gain * (0.6 + 0.06 * k), verb=0.2)
+    else:  # 只有军鼓的三连音
+        for k in range(3):
+            add('drums', T(bar, 3 + k / 3), snare(0.45 + 0.15 * k), gain=gain, verb=0.2)
+
+
+def drums(b0, b1, kick_beats=(0, 1, 2, 3), clap_beats=(1, 3), hats='off', kgain=1.0, hgain=1.0, snr=False, fills=False):
     for bar in range(b0, b1 + 1):
+        end4 = fills and (bar - b0) % 4 == 3 and bar != b1
         for kb in kick_beats:
             add('drums', T(bar, kb), kick(kgain))
             KICKS.append(T(bar, kb))
@@ -236,8 +266,17 @@ def drums(b0, b1, kick_beats=(0, 1, 2, 3), clap_beats=(1, 3), hats='off', kgain=
             add('drums', T(bar, cb), clap(), gain=0.5 if snr else 0.8, verb=0.25)
             if snr:
                 add('drums', T(bar, cb), snare(), gain=0.9, verb=0.15)
-                add('drums', T(bar, cb + 0.75 + 0.5 * (cb == 3)), snare(0.22))  # 鬼音
-        if hats == 'off':
+        if snr and hr.random() < 0.6:  # 鬼音，不是每小节都有
+            add('drums', T(bar, hr.choice([0.75, 1.75, 2.25, 2.75])), snare(0.18))
+        if end4:
+            fill(bar, int(hr.integers(0, 3)), 0.9)
+        if hats == '8':
+            for h in range(8):
+                if end4 and h >= 6:
+                    continue
+                v = (0.9 if h % 2 else 0.6) * hgain
+                add('drums', T(bar, h / 2), hat(open_=(h == 7 and bar % 2 == 1)), pan=0.3, gain=0.55 * v)
+        elif hats == 'off':
             for h in range(4):
                 add('drums', T(bar, h + .5), hat(), pan=0.3, gain=0.7 * hgain)
         elif hats == '16':
@@ -256,6 +295,12 @@ def bassline(b0, b1, prog, start, style='8', gain=0.5, cutoff=900):
             for e in range(8):
                 ff = f * (2 if e % 2 else 1)
                 add('bass', T(bar, e / 2), saw(ff, SPB / 2 * .9, cutoff, env=adsr(.003, .08, .4, .03, SPB / 2 * .9)) + sub(f, SPB / 2 * .9) * .6, gain=gain)
+        elif style == 'play':
+            nxt = mtof(chord_at(bar + 1, prog, start)[0])
+            figure = [(0, 1.3, f), (1.5, 0.45, f), (2, 0.9, f), (3, 0.45, f * 1.5), (3.5, 0.45, nxt * 2 ** (-1 / 12) if nxt > f else nxt * 2 ** (1 / 12))]
+            for b, d, ff in figure:
+                dur = d * SPB
+                add('bass', T(bar, b), saw(ff, dur, cutoff, env=adsr(.004, .15, .5, .04, dur)) + sub(ff, dur) * .6, gain=gain)
         elif style == '16':
             for e in range(16):
                 if e % 4 == 0:
@@ -372,14 +417,57 @@ def piano_arp(b0, b1, prog, start, pattern=(0, 1, 2, 3, 2, 1, 0, 2), step=0.5, v
             add('keys', T(bar, k * step), piano(m, step * SPB * 1.6), pan=0.4 * np.sin(k * 1.1), gain=vel, verb=verb)
 
 
+def near_voicing(name, center=64):
+    """挑离 center 最近的转位，换和弦时手不用大跳。"""
+    root, notes = CH[name]
+    pcs = sorted({n % 12 for n in notes})
+    best = None
+    for lo in range(52, 64):
+        v = []
+        for pc in pcs:
+            m = lo + (pc - lo) % 12
+            v.append(m)
+        v = sorted(v)
+        v.append(v[0] + 12)
+        d = abs(np.mean(v) - center)
+        if best is None or d < best[0]:
+            best = (d, v)
+    return best[1]
+
+
+# 伴奏型：(拍, 时值拍数, 力度)。两小节一组轮换，时值有长有短
+COMP = {
+    'ballad': ([(0, 2.0, .42), (2, 1.5, .33), (3.5, 0.5, .26)], [(0, 1.5, .4), (1.5, 1.0, .3), (2.5, 1.5, .34)]),
+    'drive': ([(0, 1.0, .5), (1.5, 0.45, .36), (2.5, 0.9, .44), (3.5, 0.4, .3)],
+              [(0, 0.45, .46), (0.75, 0.7, .36), (2, 1.0, .46), (3, 0.4, .3), (3.5, 0.45, .36)]),
+    'machine': ([(0, .3, .48), (.75, .25, .3), (1.5, .35, .4), (2, .3, .44), (2.75, .25, .3), (3.5, .3, .36)],
+                [(0, .3, .46), (.75, .25, .28), (1.5, .6, .4), (2.75, .25, .3), (3.25, .3, .34)]),
+    'chorus': ([(0, 1.5, .55), (1.5, 0.5, .4), (2.5, 1.0, .48), (3.5, 0.5, .36)],
+               [(0, 0.5, .5), (0.5, 1.0, .4), (2, 1.0, .5), (3, 0.5, .36), (3.5, 0.5, .42)]),
+}
+
+
+def comp(b0, b1, prog, start, style='drive', gain=1.0, octave=0, bassnote=True):
+    pats = COMP[style]
+    for bar in range(b0, b1 + 1):
+        name = prog[(bar - start) % len(prog)]
+        v = near_voicing(name)
+        for k, (b, d, vel) in enumerate(pats[(bar - b0) % 2]):
+            t0 = T(bar, b)
+            for i, m in enumerate(v):
+                add('keys', t0, piano(m + octave, d * SPB), pan=(-0.3, -0.1, 0.1, 0.3)[i % 4], gain=vel * gain * (1.2 if i == len(v) - 1 else 1), verb=0.22)
+            if bassnote and k == 0:
+                root = CH[name][0]
+                add('keys', t0, piano(root + 12, 2 * SPB), gain=0.35 * gain, verb=0.2)
+
+
 def hit(bar, beat, name=None, vel=1.0, crash_=False):
     """全乐队齐奏的一下：钢琴和弦（带低八度）+ 短底鼓 + 军鼓 + 贝斯，画面跟着猛推一下。"""
     name = name or 'Am'
     t0 = T(bar, beat)
-    stab(t0, name, 0.75 * vel, 0.16, 0, low=True, verb=0.2)
-    stab(t0, name, 0.35 * vel, 0.16, 12)
-    add('drums', t0, punch(vel))
-    add('drums', t0, snare(0.8 * vel), verb=0.2)
+    stab(t0, name, 0.6 * vel, 0.5, 0, low=True, verb=0.3)
+    stab(t0, name, 0.25 * vel, 0.5, 12)
+    add('drums', t0, punch(vel * 0.9))
     add('bass', t0, sub(mtof(CH[name][0]), 0.22, 1.8), gain=0.5 * vel)
     if crash_:
         add('drums', t0, crash(1.2), gain=0.45 * vel, verb=0.3)
@@ -402,8 +490,8 @@ def name_at(bar, prog, start):
 
 
 # ================================================================= 编曲
-OFF = (0.5, 1.5, 2.5, 3.5)          # 反拍断奏
-CHARL = (0, 1.5)                    # 查尔斯顿
+# 人声从第 6 小节起几乎每小节都在唱，句尾通常空出最后一拍；伴奏给人声让位，不再叠主奏旋律。
+# 急停只放在几个大段落交界、而且正好是人声换气的那一拍。
 TRES = (0, 0.75, 1.5, 2, 2.75, 3.5)  # 3+3+2
 
 # ---- 0 启动 1–5
@@ -414,209 +502,166 @@ for b in range(1, 6):
 for b in (3, 4):
     for k in range(8):  # “打字”的嘀嗒
         add('fx', T(b, k / 2 + 0.25 * (k % 3 == 0)), beep(2600 + 400 * (k % 3), 0.012), pan=0.4, gain=0.12)
-    for beat in (0, 1.5, 3):  # 一个音在试探
-        add('keys', T(b, beat), piano(69 + 12 * (beat == 3), 0.1), gain=0.3, verb=0.4)
+for b, beat, m, d in [(2, 0, 69, 1.5), (2, 2, 72, 1.0), (3, 0, 69, 1.0), (3, 1.5, 76, 0.5), (3, 2, 72, 1.5),
+                      (4, 0, 69, 0.5), (4, 0.5, 72, 0.5), (4, 1, 76, 1.0), (4, 2.5, 79, 1.5)]:  # 一个人在琴上试音
+    add('keys', T(b, beat), piano(m, d * SPB * 1.5), gain=0.32, verb=0.45)
+comp(5, 5, ['Am'], 5, 'ballad', gain=0.8)
 pads(3, 5, ['Am'], 3, gain=0.08, cutoff=1200, swell=True)
 add('fx', T(4), riser(4 * SPB * 2), gain=0.5, verb=0.3)
-hits(5, (0, 0.75, 1.5, 2.5), 'Am', 0.8)
 stop(5, 3, 1)
 
 # ---- 1 原初 6–15
 add('fx', T(6), boom(3.0), gain=1.0)
 add('fx', T(6), crash(4.0), gain=0.6, verb=0.6)
 hit(6, 0, 'Am', 1.0)
-pads(6, 15, MAIN, 6, gain=0.11, cutoff=2200, verb=0.5)
-bassline(6, 15, MAIN, 6, style='sub', gain=0.45)
-drums(6, 15, kick_beats=(0, 2.5), clap_beats=(), hats='off', hgain=0.6)
+pads(6, 15, MAIN, 6, gain=0.09, cutoff=2000, verb=0.5)
+bassline(6, 15, MAIN, 6, style='sub', gain=0.42)
+drums(6, 15, kick_beats=(0, 2.5), clap_beats=(), hats='off', hgain=0.5)
 for b in range(8, 15):
-    add('drums', T(b, 3), snare(0.55), verb=0.25)
-keys(6, 14, MAIN, 6, (0, 1.5, 3), vel=0.32, dur=0.18)
-arp(8, 15, MAIN, 6, 'pluck', gain=0.09)
-add('fx', T(15), riser(4 * SPB), gain=0.35)
-hits(15, (0, 0.75, 1.5, 2.5), name_at(15, MAIN, 6), 0.85)
-stop(15, 3, 1)
+    add('drums', T(b, 3), snare(0.5), verb=0.25)
+comp(6, 15, MAIN, 6, 'ballad')
+arp(10, 15, MAIN, 6, 'pluck', gain=0.05)
+fill(15, 1, 0.8)
 
-# ---- 2 定律 16–25：底鼓切分、军鼓二四拍、钢琴反拍断奏
+# ---- 2 定律 16–25：像一支小乐队在弹，鼓手每四小节一个过门
 add('fx', T(16), crash(), gain=0.5, verb=0.5)
-hit(16, 0, 'Am', 1.0)
-drums(16, 25, kick_beats=(0, 1.75, 2.5), clap_beats=(1, 3), hats='off', snr=True)
-bassline(16, 25, MAIN, 16, style='8', gain=0.4, cutoff=700)
-pads(16, 25, MAIN, 16, gain=0.07, cutoff=3000)
-keys(16, 25, MAIN, 16, OFF, vel=0.42, dur=0.11)
-arp(16, 25, MAIN, 16, 'pluck', gain=0.07, pattern=(0, 2, 1, 3, 2, 0, 3, 1))
-for b in (20, 22, 24):
-    melody(b, HOOK_A, 'lead', gain=0.14)
-hits(19, (2, 2.5), name_at(19, MAIN, 16)); stop(19, 3, 1)
-stop(21, 3.5, 0.5)
-hits(23, (0, 0.75, 1.5), name_at(23, MAIN, 16)); stop(23, 2, 1)
-add('fx', T(25), riser(3 * SPB), gain=0.3)
-hits(25, (0, 0.75, 1.5, 2.5), name_at(25, MAIN, 16)); stop(25, 3, 1)
+hit(16, 0, 'Am', 0.9)
+drums(16, 25, kick_beats=(0, 1.75, 2.5), clap_beats=(1, 3), hats='8', snr=True, fills=True)
+bassline(16, 25, MAIN, 16, style='play', gain=0.38, cutoff=800)
+pads(16, 25, MAIN, 16, gain=0.05, cutoff=2500)
+comp(16, 25, MAIN, 16, 'drive')
+arp(20, 25, MAIN, 16, 'pluck', gain=0.045, pattern=(0, 2, 1, 3, 2, 0, 3, 1))
+hit(25, 2, name_at(25, MAIN, 16), 0.8); hit(25, 2.5, name_at(25, MAIN, 16), 0.95)
+stop(25, 3, 1)
 
-# ---- 3 生命 26–34：钢琴分解和弦，鼓从第 28 小节回来
-add('fx', T(26), crash(), gain=0.35, verb=0.6)
-pads(26, 34, LIFE, 26, gain=0.1, cutoff=1800, verb=0.6)
-arp(26, 34, LIFE, 26, 'bell', gain=0.06, pattern=(0, 2, 1, 3), step=0.5, octave=12, verb=0.5)
-piano_arp(26, 33, LIFE, 26, pattern=(0, 1, 2, 3, 2, 1, 3, 2), step=0.5, vel=0.32)
-bassline(26, 34, LIFE, 26, style='sub', gain=0.4)
-drums(28, 33, kick_beats=(0, 1.5, 2.75), clap_beats=(1, 3), hats='off', kgain=0.85, hgain=0.8, snr=True)
-melody(30, HOOK_B, 'piano', gain=0.3, transpose=-12)
-melody(32, HOOK_B, 'piano', gain=0.3, transpose=0)
-stop(31, 3.5, 0.5)
-hits(33, (2.5, 3), name_at(33, LIFE, 26), 0.8)
-add('fx', T(34), riser(3 * SPB, 300, 4000), gain=0.35)
-hits(34, (0, 0.75, 1.5, 2.5), name_at(34, LIFE, 26)); stop(34, 3, 1)
+# ---- 3 生命 26–34：钢琴分解和弦，鼓从第 28 小节轻轻回来
+add('fx', T(26), crash(), gain=0.3, verb=0.6)
+pads(26, 34, LIFE, 26, gain=0.08, cutoff=1800, verb=0.6)
+arp(26, 34, LIFE, 26, 'bell', gain=0.045, pattern=(0, 2, 1, 3), step=0.5, octave=12, verb=0.5)
+piano_arp(26, 34, LIFE, 26, pattern=(0, 1, 2, 3, 2, 1, 3, 2), step=0.5, vel=0.26)
+bassline(26, 34, LIFE, 26, style='sub', gain=0.38)
+drums(28, 34, kick_beats=(0, 1.5, 2.75), clap_beats=(1, 3), hats='8', kgain=0.8, hgain=0.7, snr=True, fills=True)
+fill(34, 1, 0.9)
 
-# ---- 4 机器 35–46：3+3+2 的机械律动，钢琴和底鼓一起咬
+# ---- 4 机器 35–46：机械感留给这一章，但钢琴力度有轻重
 add('fx', T(35), boom(1.5), gain=0.6)
 hit(35, 0, 'Am', 1.0, crash_=True)
-drums(35, 46, kick_beats=(0, 0.75, 1.5, 2, 2.75), clap_beats=(1, 3), hats='16', snr=True)
-bassline(35, 46, MACH, 35, style='16', gain=0.34, cutoff=1100)
-keys(35, 45, MACH, 35, TRES, vel=0.36, dur=0.08)
-arp(35, 46, MACH, 35, 'square', gain=0.05, pattern=(0, 1, 2, 3, 2, 1), step=0.25, octave=12, verb=0.15)
-pads(39, 46, MACH, 35, gain=0.06, cutoff=2000)
-for b in (40, 42, 44):
-    melody(b, HOOK_A, 'lead', gain=0.11, transpose=-12)
-stop(38, 3.5, 0.5)
-hits(42, (2, 2.5), name_at(42, MACH, 35)); stop(42, 3, 1)
-stop(44, 3.5, 0.5)
-add('fx', T(46), riser(4 * SPB, 200, 5000), gain=0.45)
-for k, b in enumerate((0, 1, 2, 2.5, 3, 3.25, 3.5, 3.75)):
-    hit(46, b, 'E', 0.55 + 0.06 * k)
+drums(35, 46, kick_beats=(0, 0.75, 1.5, 2.75), clap_beats=(1, 3), hats='16', hgain=0.7, snr=True, fills=True)
+bassline(35, 46, MACH, 35, style='16', gain=0.3, cutoff=1000)
+comp(35, 45, MACH, 35, 'machine')
+arp(35, 46, MACH, 35, 'square', gain=0.035, pattern=(0, 1, 2, 3, 2, 1), step=0.25, octave=12, verb=0.15)
+pads(39, 46, MACH, 35, gain=0.05, cutoff=2000)
+add('fx', T(46), riser(4 * SPB, 200, 5000), gain=0.4)
+for k in range(4):  # 四下一拍一下往上推
+    hit(46, k, 'E', 0.55 + 0.12 * k)
 
-# ---- 5 网络 47–55：开头两小节整支乐队按摩尔斯电码 ... --- ... 一开一关
-add('fx', T(47), crash(), gain=0.5, verb=0.5)
+# ---- 5 网络 47–55：摩尔斯电码 ... --- ... 由钢琴高音和嘀声一起敲，乐队第 49 小节进来
+add('fx', T(47), crash(), gain=0.45, verb=0.5)
+hit(47, 0, 'Am', 0.8)
 SOS = [(0, 1), (2, 1), (4, 1), (8, 3), (12, 3), (16, 3), (22, 1), (24, 1), (26, 1)]  # 十六分音符：起点, 长度
 for s, l in SOS:
     t0 = T(47) + s * SPB / 4
-    add('fx', t0, beep(880, l * SPB / 4 * 0.9), gain=0.25, verb=0.2)
-    stab(t0, 'Am', 0.55, l * SPB / 4 * 0.9, 0, low=True)
-    add('drums', t0, punch(0.8))
-    ACC_HITS.append((B(47, s / 4), 0.8))
-gaps, cur = [], 0
-for s, l in SOS:
-    if s > cur:
-        gaps.append((cur, s))
-    cur = s + l
-gaps.append((cur, 32))
-for a, b in gaps:
-    stop(47, a / 4, (b - a) / 4)
-drums(47, 53, kick_beats=(0, 1.5, 2.5), clap_beats=(1, 3), hats='16', snr=True)
-bassline(47, 55, MAIN, 47, style='16', gain=0.36, cutoff=1400)
-supersaw(49, 55, MAIN, 47, gain=0.045, cutoff=3500)
-keys(49, 55, MAIN, 47, OFF, vel=0.42, dur=0.11)
-arp(47, 55, MAIN, 47, 'pluck', gain=0.07, pattern=(0, 3, 2, 1, 0, 3, 1, 2))
-stop(51, 3.5, 0.5)
+    add('fx', t0, beep(880, l * SPB / 4 * 0.9), gain=0.2, verb=0.25)
+    add('keys', t0, piano(81, l * SPB / 4 * 1.2), gain=0.35, verb=0.35)
+pads(47, 48, ['Am', 'F'], 47, gain=0.08, cutoff=1600, swell=True)
+bassline(47, 48, ['Am', 'F'], 47, style='sub', gain=0.38)
+drums(49, 53, kick_beats=(0, 1.75, 2.5), clap_beats=(1, 3), hats='8', snr=True, fills=True)
+bassline(49, 55, MAIN, 49, style='play', gain=0.36, cutoff=1200)
+supersaw(51, 55, MAIN, 49, gain=0.03, cutoff=3000)
+comp(49, 55, MAIN, 49, 'drive')
+arp(49, 55, MAIN, 49, 'pluck', gain=0.045, pattern=(0, 3, 2, 1, 0, 3, 1, 2))
 snare_roll(54, 2)
-add('fx', T(54), riser(8 * SPB, 150, 6000), gain=0.5)
-stop(55, 3.5, 0.5)
+add('fx', T(54), riser(8 * SPB, 150, 6000), gain=0.45)
 
-# ---- 6 学习 56–67：56–58 蓄力，第 58 小节最后一拍全停，59 副歌砸下来
-add('fx', T(56), boom(2.0), gain=0.8)
-drums(56, 58, kick_beats=(0, 2), clap_beats=(), hats='off', hgain=0.5)
-pads(56, 58, ['Am', 'F', 'G'], 56, gain=0.09, cutoff=1500, swell=True)
-bassline(56, 58, ['Am', 'F', 'G'], 56, style='sub', gain=0.4)
-keys(56, 57, ['Am', 'F'], 56, (0,), vel=0.35, dur=0.3, octave=12)
-melody(56, HOOK_A[:6], 'bell', gain=0.12)
+# ---- 6 学习 56–67：蓄力，第 58 小节最后半拍停一下（人声刚好换气），59 副歌
+add('fx', T(56), boom(2.0), gain=0.7)
+drums(56, 58, kick_beats=(0, 2), clap_beats=(), hats='off', hgain=0.45)
+pads(56, 58, ['Am', 'F', 'G'], 56, gain=0.08, cutoff=1500, swell=True)
+bassline(56, 58, ['Am', 'F', 'G'], 56, style='sub', gain=0.38)
+comp(56, 58, ['Am', 'F', 'G'], 56, 'ballad', gain=0.9)
 snare_roll(58, 1)
-add('fx', T(58), riser(3 * SPB, 300, 8000), gain=0.5)
-stop(58, 3, 1)
-add('fx', T(59), boom(2.5), gain=1.0)
-add('fx', T(59), crash(4), gain=0.7, verb=0.5)
+add('fx', T(58), riser(3.5 * SPB, 300, 8000), gain=0.45)
+stop(58, 3.5, 0.5)
+add('fx', T(59), boom(2.5), gain=0.9)
+add('fx', T(59), crash(4), gain=0.65, verb=0.5)
 hit(59, 0, 'Am', 1.1)
-drums(59, 67, kick_beats=(0, 0.75, 2, 2.5), clap_beats=(1, 3), hats='16', snr=True)
-bassline(59, 67, MAIN, 59, style='8', gain=0.43, cutoff=1000)
-supersaw(59, 67, MAIN, 59, gain=0.07)
-keys(59, 67, MAIN, 59, OFF, vel=0.5, dur=0.11)
-keys(59, 67, MAIN, 59, CHARL, vel=0.3, dur=0.2, low=True)
-for b in (59, 61, 63, 65):
-    melody(b, HOOK_A if b % 4 == 3 else HOOK_B, 'lead', gain=0.17)
-arp(59, 67, MAIN, 59, 'pluck', gain=0.06, octave=24)
-hit(62, 3, name_at(62, MAIN, 59)); stop(62, 3.5, 0.5)
-hits(66, (0, 0.75, 1.5), name_at(66, MAIN, 59)); stop(66, 2, 1)
-stop(67, 3.5, 0.5)
+drums(59, 67, kick_beats=(0, 1.5, 2, 2.75), clap_beats=(1, 3), hats='16', hgain=0.75, snr=True, fills=True)
+bassline(59, 67, MAIN, 59, style='play', gain=0.42, cutoff=1100)
+supersaw(59, 67, MAIN, 59, gain=0.05, cutoff=5000)
+comp(59, 67, MAIN, 59, 'chorus')
+arp(59, 67, MAIN, 59, 'pluck', gain=0.04, octave=24)
 
-# ---- 7 崩溃 68–76：先正常生成一段，再切碎
+# ---- 7 崩溃 68–76：先正常生成一段，再切碎；钢琴整体高了半音，听着就不对
 seg0, seg1 = T(68), T(75)
 hit(68, 0, 'E', 1.0, crash_=True)
 drums(68, 74, kick_beats=(0, 0.75, 1.5, 2, 2.75), clap_beats=(1, 3), hats='16', snr=True)
-bassline(68, 74, MACH, 68, style='16', gain=0.4, cutoff=1500)
-supersaw(68, 74, MACH, 68, gain=0.06, cutoff=5000)
-keys(68, 74, MACH, 68, TRES, vel=0.42, dur=0.08, octave=1)  # 升半音：走调的钢琴
-for b in (68, 70, 72):
-    melody(b, HOOK_A, 'lead', gain=0.15, transpose=1)
+bassline(68, 74, MACH, 68, style='16', gain=0.38, cutoff=1500)
+supersaw(68, 74, MACH, 68, gain=0.05, cutoff=5000)
+comp(68, 74, MACH, 68, 'machine', octave=1)
+for b in (70, 72):
+    melody(b, HOOK_A, 'lead', gain=0.09, transpose=1)
 drums(75, 75, hats='16')
 bassline(75, 75, MACH, 68, style='16', gain=0.4)
-supersaw(75, 75, MACH, 68, gain=0.07)
+supersaw(75, 75, MACH, 68, gain=0.06)
 
 # ---- 8 涌现 77–93
-melody(77, [(0, 2, 69)], 'bell', gain=0.25)
+melody(77, [(0, 2, 69)], 'bell', gain=0.22)
 add('keys', T(77), piano(57, 1.6), gain=0.5, verb=0.6)
-pads(78, 80, ['F', 'G', 'Am'], 78, gain=0.09, cutoff=1500, swell=True)
-piano_arp(78, 80, ['F', 'G', 'Am'], 78, pattern=(0, 1, 2, 3), step=0.5, vel=0.28, verb=0.5)
-add('fx', T(80), riser(4 * SPB), gain=0.3)
-hit(81, 0, 'Am', 0.9)
-drums(81, 87, kick_beats=(0, 1.75, 2.5), clap_beats=(1, 3), hats='off', snr=True)
-bassline(81, 87, MAIN, 81, style='8', gain=0.4, cutoff=800)
-pads(81, 87, MAIN, 81, gain=0.07, cutoff=2800)
-keys(81, 87, MAIN, 81, OFF, vel=0.42, dur=0.11)
-arp(81, 87, MAIN, 81, 'pluck', gain=0.07)
-for b in (84, 86):
-    melody(b, HOOK_B, 'lead', gain=0.14)
-stop(83, 3.5, 0.5)
-hits(85, (2, 2.5), name_at(85, MAIN, 81)); stop(85, 3, 1)
+pads(78, 80, ['F', 'G', 'Am'], 78, gain=0.08, cutoff=1500, swell=True)
+piano_arp(78, 80, ['F', 'G', 'Am'], 78, pattern=(0, 1, 2, 3), step=0.5, vel=0.26, verb=0.5)
+add('fx', T(80), riser(4 * SPB), gain=0.28)
+fill(80, 0, 0.7)
+hit(81, 0, 'Am', 0.85)
+drums(81, 87, kick_beats=(0, 1.75, 2.5), clap_beats=(1, 3), hats='8', snr=True, fills=True)
+bassline(81, 87, MAIN, 81, style='play', gain=0.38, cutoff=800)
+pads(81, 87, MAIN, 81, gain=0.05, cutoff=2500)
+comp(81, 87, MAIN, 81, 'drive')
+arp(83, 87, MAIN, 81, 'pluck', gain=0.045)
 snare_roll(87, 1)
-add('fx', T(87), riser(3 * SPB, 300, 8000), gain=0.5)
+add('fx', T(87), riser(3 * SPB, 300, 8000), gain=0.45)
 stop(87, 3, 1)
-add('fx', T(88), boom(2.5), gain=1.0)
-add('fx', T(88), crash(4), gain=0.7, verb=0.5)
+add('fx', T(88), boom(2.5), gain=0.95)
+add('fx', T(88), crash(4), gain=0.65, verb=0.5)
 hit(88, 0, 'Am', 1.15)
-drums(88, 93, kick_beats=(0, 0.75, 2, 2.5), clap_beats=(1, 3), hats='16', snr=True)
-bassline(88, 93, MAIN, 88, style='16', gain=0.4, cutoff=1300)
-supersaw(88, 93, MAIN, 88, gain=0.08, cutoff=7000)
-keys(88, 92, MAIN, 88, OFF, vel=0.55, dur=0.11, octave=12)
-keys(88, 92, MAIN, 88, CHARL, vel=0.32, dur=0.2, low=True)
-for b in (88, 90):
-    melody(b, HOOK_A, 'lead', gain=0.16, transpose=12)
-melody(92, HOOK_B, 'lead', gain=0.16, transpose=12)
-arp(88, 93, MAIN, 88, 'pluck', gain=0.06, octave=24)
-hit(90, 3, name_at(90, MAIN, 88)); stop(90, 3.5, 0.5)
-add('fx', T(93), riser(3 * SPB, 400, 9000), gain=0.4)
-hits(93, (0, 0.75, 1.5, 2.5), name_at(93, MAIN, 88), 1.05); stop(93, 3, 1)
+drums(88, 93, kick_beats=(0, 1.5, 2, 2.75), clap_beats=(1, 3), hats='16', hgain=0.8, snr=True, fills=True)
+bassline(88, 93, MAIN, 88, style='play', gain=0.42, cutoff=1200)
+supersaw(88, 93, MAIN, 88, gain=0.06, cutoff=6000)
+comp(88, 93, MAIN, 88, 'chorus')
+comp(88, 93, MAIN, 88, 'chorus', gain=0.35, octave=12, bassnote=False)
+arp(88, 93, MAIN, 88, 'pluck', gain=0.04, octave=24)
+fill(93, 1, 1.0)
 
 # ---- 9 相遇 94–105
-add('fx', T(94), crash(5), gain=0.4, verb=0.7)
-pads(94, 97, ['F', 'C', 'G', 'Am'], 94, gain=0.1, cutoff=1600, verb=0.7)
-bassline(94, 97, ['F', 'C', 'G', 'Am'], 94, style='sub', gain=0.35)
-M94 = [(0, 2, 72), (2, 2, 76), (4, 2, 79), (6, 2, 76)]
-M96 = [(0, 2, 77), (2, 2, 76), (4, 1, 74), (5, 1, 72), (6, 2, 71)]
-melody(94, M94, 'bell', gain=0.09)
-melody(96, M96, 'bell', gain=0.09)
-melody(94, M94, 'piano', gain=0.35, transpose=-12)
-melody(96, M96, 'piano', gain=0.35, transpose=-12)
+add('fx', T(94), crash(5), gain=0.35, verb=0.7)
+pads(94, 97, ['F', 'C', 'G', 'Am'], 94, gain=0.08, cutoff=1600, verb=0.7)
+bassline(94, 97, ['F', 'C', 'G', 'Am'], 94, style='sub', gain=0.33)
+comp(94, 97, ['F', 'C', 'G', 'Am'], 94, 'ballad', gain=0.85)
 for k in range(8):  # 靠近时的心跳
-    add('drums', T(96, k), kick(0.35 + 0.08 * k))
+    add('drums', T(96, k), kick(0.3 + 0.07 * k))
 stop(97, 3.5, 0.5)
 rev = crash(2.0)[::-1]
-add('fx', T(98) - len(rev) / SR, rev, gain=0.5)
-add('fx', T(98), boom(3.0), gain=1.1)
-add('fx', T(98), crash(5), gain=0.8, verb=0.8)
+add('fx', T(98) - len(rev) / SR, rev, gain=0.45, verb=0.3)
+add('fx', T(98), boom(3.0), gain=1.05)
+add('fx', T(98), crash(5), gain=0.75, verb=0.8)
 hit(98, 0, 'F', 1.2)
 add('keys', T(98), sum(piano(m, 3.0) for m in (41, 53, 57, 60, 65, 69)), gain=0.4, verb=0.6)
-melody(98, [(0, 4, 81)], 'bell', gain=0.2)
-pads(99, 101, ['F', 'C', 'G'], 99, gain=0.1, cutoff=2400, verb=0.6)
-bassline(99, 101, ['F', 'C', 'G'], 99, style='sub', gain=0.35)
-piano_arp(99, 101, ['F', 'C', 'G'], 99, pattern=(0, 1, 2, 3), step=0.5, vel=0.3, verb=0.5)
-drums(102, 102, kick_beats=(0, 0.75, 2), clap_beats=(1,), hats='16', snr=True)
-supersaw(102, 102, ['Am'], 102, gain=0.07)
-bassline(102, 102, ['Am'], 102, style='16', gain=0.4)
-hits(102, (0, 0.75, 1.5, 2.5), 'Am', 1.0); stop(102, 3, 1)
-add('fx', T(103), riser(4 * SPB, 6000, 100) * np.linspace(1, 0, int(4 * SPB * SR)), gain=0.3)
-pads(103, 103, ['E'], 103, gain=0.08, cutoff=900, verb=0.6)
-melody(104, [(0, 0.5, 69), (0.5, 0.5, 72), (1, 0.5, 76), (1.5, 0.5, 81), (2, 6, 85)], 'bell', gain=0.18)
+melody(98, [(0, 4, 81)], 'bell', gain=0.18)
+pads(99, 101, ['F', 'C', 'G'], 99, gain=0.08, cutoff=2200, verb=0.6)
+bassline(99, 101, ['F', 'C', 'G'], 99, style='sub', gain=0.33)
+piano_arp(99, 101, ['F', 'C', 'G'], 99, pattern=(0, 1, 2, 3), step=0.5, vel=0.28, verb=0.5)
+drums(102, 102, kick_beats=(0, 1.75, 2.5), clap_beats=(1,), hats='8', snr=True)
+comp(102, 102, ['Am'], 102, 'drive')
+bassline(102, 102, ['Am'], 102, style='play', gain=0.38)
+hit(102, 2, 'Am', 0.8); hit(102, 2.5, 'Am', 0.95)
+stop(102, 3, 1)
+add('fx', T(103), riser(4 * SPB, 6000, 100) * np.linspace(1, 0, int(4 * SPB * SR)), gain=0.25)
+pads(103, 103, ['E'], 103, gain=0.07, cutoff=900, verb=0.6)
+add('keys', T(103), sum(piano(m, 3.5) for m in (40, 52, 56, 59, 64)), gain=0.32, verb=0.6)
+melody(104, [(0, 0.5, 69), (0.5, 0.5, 72), (1, 0.5, 76), (1.5, 0.5, 81), (2, 6, 85)], 'bell', gain=0.13)
 for k, m in enumerate((57, 61, 64, 69, 73)):
     add('keys', T(104, k * 0.5), piano(m, 5.0 - k * 0.25), gain=0.32, verb=0.6)
-pads(104, 105, ['A'], 104, gain=0.1, cutoff=2000, verb=0.8)
-add('bass', T(104), sub(mtof(33), 6, 1.0), gain=0.35)
+pads(104, 105, ['A'], 104, gain=0.09, cutoff=2000, verb=0.8)
+add('bass', T(104), sub(mtof(33), 6, 1.0), gain=0.33)
 
 # ---------------------------------------------------------------- 急停：所有声部和混响发送一起掐掉（已经在响的混响尾巴留着）
 gate = np.ones(N, np.float32)
@@ -685,12 +730,12 @@ for s in range(0, seg.shape[1], step):
         n = int(step / r7.choice([2, 4, 8]))
         rep = np.tile(blk[:, :n], (1, step // n + 1))[:, :blk.shape[1]]
         seg[:, s:s + step] = rep
-    elif x < 0.45 + 0.3 * p:  # 降采样 + 比特粉碎
+    elif x < 0.47 + 0.3 * p:  # 降采样 + 比特粉碎
         h = int(r7.choice([6, 12, 24]))
         held = np.repeat(blk[:, ::h], h, axis=1)[:, :blk.shape[1]]
         bits = 2 ** int(r7.choice([3, 4, 5]))
         seg[:, s:s + step] = np.round(held * bits) / bits
-    elif x < 0.5 + 0.2 * p:  # 静音一下
+    elif x < 0.5 + 0.1 * p:  # 静音一下
         seg[:, s:s + step] *= 0.05
         ACC_STOPS.append((beat0, 0.5))
 mix[:, i0:i1] = seg
